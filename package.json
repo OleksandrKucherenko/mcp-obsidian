@@ -35,6 +35,10 @@
     "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PublikPrinciple/obsidian-mcp-rest.git"
+  },
   "keywords": [
     "obsidian",
     "mcp",
@@ -42,5 +46,9 @@
     "claude"
   ],
   "author": "PublikPrinciple",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PublikPrinciple/obsidian-mcp-rest/issues"
+  },
+  "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme"
 }
