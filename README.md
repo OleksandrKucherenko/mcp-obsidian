@@ -16,12 +16,17 @@ An MCP (Model Context Protocol) server implementation that provides access to Ob
 - Node.js 16 or higher
 - Obsidian with Local REST API plugin installed and configured
 - An Obsidian vault with Local REST API enabled
+- Git installed on your system
 
 ## Installation
 
-1. Install the package:
+1. Clone and install the package:
 ```bash
-npm install -g @publikprinciple/obsidian-mcp-rest
+git clone https://github.com/PublikPrinciple/obsidian-mcp-rest.git
+cd obsidian-mcp-rest
+npm install
+npm run build
+npm install -g .
 ```
 
 2. Configure Obsidian Local REST API plugin:
