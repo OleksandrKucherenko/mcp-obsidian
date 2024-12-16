@@ -7,8 +7,8 @@
     "obsidian-mcp-rest": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build",
+    "build": "npx tsc",
+    "prepare": "npx tsc",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js"
@@ -17,7 +17,8 @@
     "@modelcontextprotocol/sdk": "^1.0.0",
     "axios": "^1.6.0",
     "yargs": "^17.7.2",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "typescript": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -27,8 +28,7 @@
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.0.0",
     "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.0.0"
+    "ts-jest": "^29.1.0"
   },
   "files": [
     "dist",
@@ -48,7 +48,7 @@
   "author": "PublikPrinciple",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PublikPrinciple/obsidian-mcp-rest/issues"
+    "url": "url": "https://github.com/PublikPrinciple/obsidian-mcp-rest/issues"
   },
   "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme"
 }
