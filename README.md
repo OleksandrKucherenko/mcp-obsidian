@@ -17,25 +17,18 @@ An MCP (Model Context Protocol) server implementation that provides access to Ob
 - Obsidian with Local REST API plugin installed and configured
 - An Obsidian vault with Local REST API enabled
 
-## Quick Installation
+## Installation
+
+Install the package globally:
 
 ```bash
-npm install -g github:PublikPrinciple/obsidian-mcp-rest
+npm install -g PublikPrinciple/obsidian-mcp-rest
 ```
 
-## Alternative Installation (Development)
+Or if you prefer using a specific version/branch:
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/PublikPrinciple/obsidian-mcp-rest.git
-cd obsidian-mcp-rest
-```
-
-2. Install dependencies and build:
-```bash
-npm install
-npm run build
-npm install -g .
+npm install -g PublikPrinciple/obsidian-mcp-rest#main
 ```
 
 ## Configuration
@@ -127,6 +120,26 @@ npm run build
 4. Run tests:
 ```bash
 npm test
+```
+
+## Troubleshooting
+
+### Installation Issues
+
+If you encounter any installation issues, try these alternatives:
+
+1. Clone and install locally:
+```bash
+git clone https://github.com/PublikPrinciple/obsidian-mcp-rest.git
+cd obsidian-mcp-rest
+npm install
+npm run build
+npm install -g .
+```
+
+2. If you see TypeScript-related errors, ensure TypeScript is installed globally:
+```bash
+npm install -g typescript
 ```
 
 ## Contributing
