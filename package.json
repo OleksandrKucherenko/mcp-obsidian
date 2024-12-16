@@ -1,0 +1,38 @@
+{
+  "name": "@publikprinciple/obsidian-mcp-rest",
+  "version": "1.0.0",
+  "description": "MCP server implementation for accessing Obsidian via local REST API",
+  "main": "dist/index.js",
+  "bin": {
+    "obsidian-mcp-rest": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "start": "node dist/cli.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.6.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "obsidian",
+    "mcp",
+    "rest-api",
+    "claude"
+  ],
+  "author": "PublikPrinciple",
+  "license": "MIT"
+}
