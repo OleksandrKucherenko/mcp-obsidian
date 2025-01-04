@@ -1,4 +1,4 @@
-import { ToolResponse } from '@modelcontextprotocol/sdk/types';
+import { ToolResponse } from '../types';
 import { BaseTool } from './base-tool';
 import { ObsidianAPI } from '../obsidian-api';
 
