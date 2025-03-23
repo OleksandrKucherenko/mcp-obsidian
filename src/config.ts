@@ -12,9 +12,12 @@ declare namespace NodeJS {
 
 const DEFAULTS = "config.secured.jsonc";
 
-export function loadConfig(configPath: string): ServerConfig {
+export function loadConfig(configPath?: string): ServerConfig {
 	// load config first
-	const configFile = fs.existsSync(configPath) ? configPath : DEFAULTS;
+	const configFile =
+		configPath && fs.existsSync(configPath) ? configPath : DEFAULTS;
+	console.log(`Loading config from ${configFile}`);
+
 	const configContent = fs.readFileSync(configFile, "utf-8");
 	const config = JSON5.parse(configContent) as ServerConfig;
 
@@ -25,6 +28,12 @@ export function loadConfig(configPath: string): ServerConfig {
 		process.env.PORT ?? `${config.obsidian.port}`,
 		10,
 	);
+
+	// try to validate the apiKey from config, for matching pattern /^[a-zA-Z0-9]{32,}$/
+	// default key size from Obsidian Local REST API plugin is 64 characters
+	if (!/^[a-zA-Z0-9]{32,}$/.test(config.obsidian.apiKey)) {
+		console.warn("Invalid API key, expected at least 32 characters");
+	}
 
 	return config;
 }

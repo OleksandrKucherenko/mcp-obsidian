@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "MCP server implementation for accessing Obsidian via local REST API",
   "main": "dist/index.js",
-  "type": "module",
   "bin": "./dist/cli.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "prepare": "tsc",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --passWithNoTests",
@@ -22,10 +21,10 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/node": "^20.11.29",
-    "@types/yargs": "^17.0.32",
-    "@vitest/coverage-v8": "^1.4.0",
-    "eslint": "^8.57.1",
+    "@types/node": "^20.17.25",
+    "@types/yargs": "^17.0.33",
+    "@vitest/coverage-v8": "^3.0.9",
+    "eslint": "^9.23.0",
     "knip": "^5.46.0",
     "vitest": "^3.0.9"
   },

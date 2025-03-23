@@ -1,7 +1,7 @@
 export interface Tool {
 	getName(): string;
 	getDefinition(): ToolDefinition;
-	execute(args: any): Promise<ToolResponse>;
+	execute(args: Record<string, unknown>): Promise<ToolResponse>;
 }
 
 export interface ToolDefinition {
@@ -23,7 +23,7 @@ export interface Server {
 		version: string;
 		readOnly: boolean;
 	};
-	connect(transport: any): Promise<void>;
+	connect(transport: ServerTransport): Promise<void>;
 	registerTool(tool: Tool): void;
 }
 
@@ -32,5 +32,5 @@ export interface ServerTransport {
 }
 
 export interface Config {
-	config: string;
+	config?: string;
 }

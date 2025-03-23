@@ -6,17 +6,6 @@ import { loadConfig } from "./config";
 import { ObsidianMCPServer } from "./server";
 import type { Config } from "./types";
 
-export const main = async (argv: yargs.Arguments<Config>) => {
-	try {
-		const config = loadConfig(argv.config);
-		const server = new ObsidianMCPServer(config);
-		await server.start();
-	} catch (error) {
-		console.error("Failed to start server:", error);
-		process.exit(1);
-	}
-};
-
 yargs(hideBin(process.argv))
 	.command(
 		"$0",
@@ -26,9 +15,18 @@ yargs(hideBin(process.argv))
 				alias: "c",
 				type: "string",
 				description: "Path to config file",
-				demandOption: true,
+				demandOption: false,
 			});
 		},
-		main,
+		async (argv: yargs.Arguments<Config>) => {
+			try {
+				const config = loadConfig(argv.config);
+				const server = new ObsidianMCPServer(config);
+				await server.start();
+			} catch (error) {
+				console.error("Failed to start server:", error);
+				process.exit(1);
+			}
+		},
 	)
 	.help().argv;
