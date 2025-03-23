@@ -8,7 +8,7 @@
   "obsidian": {
     // add your API key here, or inject API_KEY environment variable
     "apiKey": "",
-    // Obsidian Local REST API publish two ports: 
+    // Obsidian Local REST API publish two ports:
     // - 27123 (unsecure, not enabled by default)
     // - 27124 (default, secured)
     "port": 27124,
