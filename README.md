@@ -142,10 +142,67 @@ yarn build
 openssl x509 -in obsidian-local-rest-api.crt -out rootCA.pem -outform PEM
 
 # run under inspector
- npx @modelcontextprotocol/inspector node dist/cli.js
+npx @modelcontextprotocol/inspector node dist/cli.js
 ```
 
 ## Troubleshooting
+
+### Verify that Obsidian REST API is running
+
+```bash
+# curl with --insecure to accept self-signed certificate
+curl --insecure https://localhost:27124
+
+# If using WSL with Obsidian REST API running on Windows host
+curl --insecure https://host.docker.internal:27124
+
+# Add firewall rule to allow port 27124 (Run in Admin PowerShell)
+New-NetFirewallRule -DisplayName "Allow Port 27124" -Direction Inbound -LocalPort 27124 -Protocol TCP -Action Allow
+```
+
+### Using from WSL
+
+If you're running this project in WSL but Obsidian with the REST API plugin is running on your Windows host, you need to use one of these approaches to connect:
+
+1. **Use `host.docker.internal`** (Recommended)
+   ```typescript
+   const config = {
+     apiKey: "YOUR_API_KEY",
+     port: 27124,
+     host: "https://host.docker.internal"
+   };
+   ```
+
+2. **Find Windows host IP from WSL**
+   ```bash
+   # Get Windows host IP address (typically the first nameserver in resolv.conf)
+   WINDOWS_HOST_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+   
+   # Test connection
+   curl --insecure https://$WINDOWS_HOST_IP:27124
+   ```
+   Then use the IP in your config:
+   ```typescript
+   const config = {
+     apiKey: "YOUR_API_KEY",
+     port: 27124,
+     host: `https://${windowsHostIp}`
+   };
+   ```
+
+3. **Add a custom host entry** (Permanent solution)
+   ```bash
+   # Add an entry to your /etc/hosts file
+   echo "$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}') windows-host" | sudo tee -a /etc/hosts
+   ```
+   Then use the hostname in your config:
+   ```typescript
+   const config = {
+     apiKey: "YOUR_API_KEY",
+     port: 27124,
+     host: "https://windows-host"
+   };
+   ```
 
 ### Installation Issues
 

@@ -22,6 +22,10 @@ describe("Configuration", () => {
 		// Setup default mocks
 		vi.mocked(fs.existsSync).mockReturnValue(true);
 		vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(mockConfig));
+
+		// exclude our dependencies
+		const { API_KEY, HOST, PORT, ...rest } = process.env;
+		process.env = { ...rest };
 	});
 
 	afterEach(() => {
