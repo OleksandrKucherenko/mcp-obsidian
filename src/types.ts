@@ -30,3 +30,7 @@ export interface Server {
 export interface ServerTransport {
 	connect(): Promise<void>;
 }
+
+export interface Config {
+	config: string;
+}

@@ -2,25 +2,26 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import fs from "node:fs";
-import JSON5 from "json5";
-import { ObsidianMCPServer, type ServerConfig } from "./server";
+import { loadConfig } from "./config";
+import { ObsidianMCPServer } from "./server";
+import type { Config } from "./types";
 
-declare namespace NodeJS {
-	interface ProcessEnv {
-		API_KEY: string;
-		HOST: string;
-		PORT: string;
+export const main = async (argv: yargs.Arguments<Config>) => {
+	try {
+		const config = loadConfig(argv.config);
+		const server = new ObsidianMCPServer(config);
+		await server.start();
+	} catch (error) {
+		console.error("Failed to start server:", error);
+		process.exit(1);
 	}
-}
-
-const DEFAULTS = "config.secured.jsonc";
+};
 
 yargs(hideBin(process.argv))
 	.command(
 		"$0",
 		"Start the Obsidian MCP server",
-		(yargs) => {
+		(yargs: yargs.Argv): yargs.Argv<Config> => {
 			return yargs.option("config", {
 				alias: "c",
 				type: "string",
@@ -28,27 +29,6 @@ yargs(hideBin(process.argv))
 				demandOption: true,
 			});
 		},
-		async (argv) => {
-			try {
-				// load config first
-				const configFile = fs.existsSync(argv.config) ? argv.config : DEFAULTS;
-				const configContent = fs.readFileSync(configFile, "utf-8");
-				const config = JSON5.parse(configContent) as ServerConfig;
-
-				// environment variables if they available override the config file
-				config.obsidian.apiKey = process.env.API_KEY ?? config.obsidian.apiKey;
-				config.obsidian.host = process.env.HOST ?? config.obsidian.host;
-				config.obsidian.port = Number.parseInt(
-					process.env.PORT ?? `${config.obsidian.port}`,
-					10,
-				);
-
-				const server = new ObsidianMCPServer(config);
-				await server.start();
-			} catch (error) {
-				console.error("Failed to start server:", error);
-				process.exit(1);
-			}
-		},
+		main,
 	)
 	.help().argv;
