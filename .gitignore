@@ -12,4 +12,7 @@ config.json
 
 # Yarn files
 .yarn/cache
+
+# lock files
 yarn.lock
+package-lock.json

@@ -1,6 +1,9 @@
 {
   "name": "mcp-obsidian",
   "version": "1.1.0",
+  // set to true to make the server propagate only read-only tools
+  // otherwise will be available write tools, for composing obsidian notes
+  // from MCP server side
   "readOnly": true,
   "obsidian": {
     // add your API key here, or inject API_KEY environment variable
