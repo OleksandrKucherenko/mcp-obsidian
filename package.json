@@ -6,29 +6,27 @@
   "type": "module",
   "bin": "./dist/cli.js",
   "scripts": {
-    "build": "npx tsc",
-    "prepare": "npx tsc",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "build": "tsc",
+    "prepare": "tsc",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js",
-    "docker:build": "docker build -t mcp-obsidian:latest -f Dockerfile ."
+    "docker:build": "docker build -t mcp-obsidian:latest -f Dockerfile .",
+    "checks:knip": "knip"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.17.1",
     "axios": "^1.8.4",
-    "dotenv": "^16.4.7",
     "json5": "^2.2.3",
     "typescript": "^5.8.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.11.29",
     "@types/yargs": "^17.0.32",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@vitest/coverage-v8": "3.0.9",
+    "@vitest/coverage-v8": "^1.4.0",
     "eslint": "^8.57.1",
+    "knip": "^5.46.0",
     "vitest": "^3.0.9"
   },
   "files": [
