@@ -33,7 +33,7 @@ npm install -g PublikPrinciple/obsidian-mcp-rest#main
 
 ## Configuration
 
-1. First, configure Obsidian Local REST API plugin:
+1. First, configure [Obsidian Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api):
    - Install the Local REST API plugin in Obsidian
    - Configure the API port (default: 27123)
    - Generate and save an API key

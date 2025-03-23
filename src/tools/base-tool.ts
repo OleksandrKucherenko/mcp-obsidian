@@ -1,43 +1,48 @@
-import { Tool } from '../types';
-import { ObsidianAPI } from '../obsidian-api';
+import type { Tool } from "../types";
+import type { ObsidianAPI } from "../obsidian-api";
 
 export interface ToolResponse {
-  content: Array<{
-    type: string;
-    text: string;
-  }>;
+	content: Array<{
+		type: string;
+		text: string;
+	}>;
 }
 
 export interface ToolDefinition {
-  name: string;
-  description: string;
-  inputSchema: object;
+	name: string;
+	description: string;
+	inputSchema: object;
 }
 
 export abstract class BaseTool implements Tool {
-  protected api: ObsidianAPI;
-  protected name: string;
-  protected description: string;
-  protected inputSchema: object;
+	protected api: ObsidianAPI;
+	protected name: string;
+	protected description: string;
+	protected inputSchema: object;
 
-  constructor(api: ObsidianAPI, name: string, description: string, inputSchema: object) {
-    this.api = api;
-    this.name = name;
-    this.description = description;
-    this.inputSchema = inputSchema;
-  }
+	constructor(
+		api: ObsidianAPI,
+		name: string,
+		description: string,
+		inputSchema: object,
+	) {
+		this.api = api;
+		this.name = name;
+		this.description = description;
+		this.inputSchema = inputSchema;
+	}
 
-  getName(): string {
-    return this.name;
-  }
+	getName(): string {
+		return this.name;
+	}
 
-  getDefinition(): ToolDefinition {
-    return {
-      name: this.name,
-      description: this.description,
-      inputSchema: this.inputSchema,
-    };
-  }
+	getDefinition(): ToolDefinition {
+		return {
+			name: this.name,
+			description: this.description,
+			inputSchema: this.inputSchema,
+		};
+	}
 
-  abstract execute(args: any): Promise<ToolResponse>;
+	abstract execute(args: unknown): Promise<ToolResponse>;
 }

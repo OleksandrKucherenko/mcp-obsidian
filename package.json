@@ -4,22 +4,22 @@
   "description": "MCP server implementation for accessing Obsidian via local REST API",
   "main": "dist/index.js",
   "type": "module",
-  "bin": {
-    "obsidian-mcp-rest": "./dist/cli.js"
-  },
+  "bin": "./dist/cli.js",
   "scripts": {
     "build": "npx tsc",
     "prepare": "npx tsc",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "docker:build": "docker build -t mcp-obsidian:latest -f Dockerfile ."
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.17.1",
     "axios": "^1.6.0",
-    "yargs": "^17.7.2",
     "dotenv": "^16.3.1",
-    "typescript": "^5.0.0"
+    "json5": "^2.2.3",
+    "typescript": "^5.0.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -51,5 +51,9 @@
   "bugs": {
     "url": "https://github.com/PublikPrinciple/obsidian-mcp-rest/issues"
   },
-  "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme"
+  "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme",
+  "volta": {
+    "node": "22.12.0",
+    "yarn": "4.7.0"
+  }
 }

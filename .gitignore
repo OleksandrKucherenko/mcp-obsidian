@@ -1,7 +1,15 @@
 node_modules/
 dist/
 coverage/
+
 .env
 config.json
+
 *.log
+
+# OS files
 .DS_Store
+
+# Yarn files
+.yarn/cache
+yarn.lock
