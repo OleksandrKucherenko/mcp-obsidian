@@ -1,3 +1,8 @@
+// import { ToolSchema } from "@modelcontextprotocol/sdk/types.js";
+// import { z } from "zod";
+// const ToolInputSchema = ToolSchema.shape.inputSchema;
+// export type ToolInput = z.infer<typeof ToolInputSchema>;
+
 export interface Tool {
 	getName(): string;
 	getDefinition(): ToolDefinition;
@@ -15,6 +20,7 @@ export interface ToolResponse {
 		type: string;
 		text: string;
 	}>;
+	isError?: boolean;
 }
 
 export interface Server {

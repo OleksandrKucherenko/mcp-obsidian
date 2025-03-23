@@ -16,3 +16,6 @@ config.json
 # lock files
 yarn.lock
 package-lock.json
+
+# DIRENV for secret injecting
+.envrc

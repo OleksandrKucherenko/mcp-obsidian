@@ -122,6 +122,29 @@ npm run build
 npm test
 ```
 
+## Dockerize
+
+```bash
+# to build the image
+docker build -t mcp/obsidian:latest -f Dockerfile .
+
+# run locally with enabled debug and injected API_KEY
+DEBUG=* docker run --name mcp-obsidian -e DEBUG -e API_KEY --rm -i mcp/obsidian:latest 
+```
+
+https://github.com/modelcontextprotocol/inspector
+
+```bash
+# build code first
+yarn build
+
+# convert obsidian root certificate to PEM format
+openssl x509 -in obsidian-local-rest-api.crt -out rootCA.pem -outform PEM
+
+# run under inspector
+ npx @modelcontextprotocol/inspector node dist/cli.js
+```
+
 ## Troubleshooting
 
 ### Installation Issues

@@ -1,4 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
+import { addLogger } from "axios-debug-log";
+import { debug } from "debug";
+import https from "node:https";
 
 export interface ObsidianConfig {
 	apiKey: string;
@@ -22,13 +25,23 @@ export class ObsidianAPI {
 				? `${config.host}:${config.port}`
 				: `http://${config.host}:${config.port}`;
 
+		// Create https agent that accepts self-signed certificates
+		const httpsAgent = new https.Agent({
+			rejectUnauthorized: false, // Allow self-signed certificates
+		});
+
 		this.client = axios.create({
 			baseURL,
+			proxy: false,
 			headers: {
 				Authorization: `Bearer ${config.apiKey}`,
 				"Content-Type": "application/json",
 			},
+			httpsAgent, // Use the custom agent for HTTPS requests
 		});
+
+		const logger = debug("mcp:obsidian-api");
+		addLogger(this.client, logger);
 	}
 
 	async listNotes(folder?: string): Promise<string[]> {

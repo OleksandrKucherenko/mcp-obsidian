@@ -3,33 +3,41 @@
   "version": "1.0.0",
   "description": "MCP server implementation for accessing Obsidian via local REST API",
   "main": "dist/index.js",
-  "bin": "./dist/cli.js",
+  "bin": {
+    "mcp-obsidian": "./dist/cli.js"
+  },
   "scripts": {
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc && shx chmod +x dist/cli.js",
     "prepare": "tsc",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --passWithNoTests",
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js",
-    "docker:build": "docker build -t mcp-obsidian:latest -f Dockerfile .",
+    "docker:build": "docker build -t mcp/obsidian:latest -f Dockerfile .",
     "checks:knip": "knip"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.7.0",
     "axios": "^1.8.4",
+    "axios-debug-log": "^1.0.0",
+    "debug": "^4.4.0",
     "json5": "^2.2.3",
     "typescript": "^5.8.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.12",
     "@types/node": "^20.17.25",
     "@types/yargs": "^17.0.33",
     "@vitest/coverage-v8": "^3.0.9",
     "eslint": "^9.23.0",
     "knip": "^5.46.0",
+    "shx": "^0.4.0",
     "vitest": "^3.0.9"
   },
   "files": [
     "dist",
+    "config.secured.jsonc",
     "LICENSE",
     "README.md"
   ],

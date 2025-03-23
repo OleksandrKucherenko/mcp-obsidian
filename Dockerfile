@@ -7,15 +7,11 @@ FROM node:22.12-alpine AS builder
 # Create app directory
 WORKDIR /app
 
-# Copy package.json first for better layer caching
-COPY ./package.json ./
-
+# Copy package.json
 # Copy source code and configuration files
+# default TS configuration and app configuration
+COPY ./package.json ./tsconfig.json ./config.secured.jsonc ./
 COPY ./src ./src
-COPY ./tsconfig.json ./
-
-# default configuration
-COPY ./config.secured.jsonc ./
 
 # Install dependencies
 RUN npm install
@@ -34,11 +30,11 @@ FROM node:22-alpine AS release
 WORKDIR /app
 
 # Copy files from builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/config.secured.jsonc ./
-COPY --from=builder /app/package.json ./
+COPY --from=builder /app/dist ./dist 
+COPY --from=builder /app/config.secured.jsonc /app/package.json /app/package-lock.json ./
 
 ENV NODE_ENV=production
+RUN npm ci --ignore-scripts --omit-dev
 
 # environment variables for injecting via docker run command
 # ENV API_KEY=
