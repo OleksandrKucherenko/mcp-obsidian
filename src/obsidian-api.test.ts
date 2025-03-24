@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { ObsidianAPI } from "./obsidian-api"
-import { ObsidianConfig } from "./types"
+import type { ObsidianConfig } from "./types"
 import axios from "axios"
 
 // #region Mock dependencies
@@ -34,8 +34,8 @@ describe("ObsidianAPI - Unit Tests", () => {
 
   beforeEach(() => {
     mockClient = { get: vi.fn(), put: vi.fn(), post: vi.fn() }
-      // Using correct type for mocked function
-      ; (axios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+    // Using correct type for mocked function
+    ;(axios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
     api = new ObsidianAPI(config)
   })
 

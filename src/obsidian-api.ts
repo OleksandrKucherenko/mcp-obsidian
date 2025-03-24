@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from "axios"
 import { addLogger } from "axios-debug-log"
 import { debug } from "debug"
 import https from "node:https"
-import { IObsidianAPI, Note, ObsidianConfig } from "./types"
+import type { IObsidianAPI, Note, ObsidianConfig } from "./types"
 
 /**
  * V1 implementation of the Obsidian API
@@ -66,29 +66,24 @@ export class ObsidianAPI implements IObsidianAPI {
   }
 
   // ref: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_simple_
-  async searchNotes(query: string, contextLength: number = 100): Promise<Note[]> {
+  async searchNotes(query: string, contextLength = 100): Promise<Note[]> {
     // API expects query parameters, not a request body
-    const response = await this.client.post(
-      "/search/simple/",
-      null,
-      { params: { query, contextLength } }
-    )
+    const response = await this.client.post("/search/simple/", null, { params: { query, contextLength } })
 
     // Transform the API response to match the Note interface
     // The API returns an array of search results with filename and matches
     // biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic API response
     return (response.data || []).map((result: any) => {
       // Combine all match contexts into a single content string
-      const content = result.matches
-        ?.map((match: any) => match.context || "")
-        .join("\n\n") || "";
+      // biome-ignore lint/suspicious/noExplicitAny: Keep it simple
+      const content = result.matches?.map((match: any) => match.context || "").join("\n\n") || ""
 
       return {
         path: result.filename,
         content,
         metadata: { score: result.score },
-      };
-    });
+      }
+    })
   }
 
   async getMetadata(path: string): Promise<Record<string, unknown>> {

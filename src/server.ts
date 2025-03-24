@@ -2,8 +2,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
 
-import type { Server as Srv, ServerTransport, Tool } from "./types"
-import { type IObsidianAPI } from "./types"
+import type { IObsidianAPI, Server as Srv, ServerTransport, Tool } from "./types"
 import { ObsidianAPI } from "./obsidian-api.v2"
 import { ListNotesTool, ReadNoteTool, WriteNoteTool, SearchNotesTool, GetMetadataTool } from "./tools"
 
@@ -84,10 +83,12 @@ export class ObsidianMCPServer implements Srv {
       new ReadNoteTool(this.api),
       new SearchNotesTool(this.api),
       new GetMetadataTool(this.api),
-      ...(this.config.readOnly ? [] : [
-        // Write tools
-        new WriteNoteTool(this.api)
-      ]),
+      ...(this.config.readOnly
+        ? []
+        : [
+            // Write tools
+            new WriteNoteTool(this.api),
+          ]),
     ]
 
     for (const tool of tools) {

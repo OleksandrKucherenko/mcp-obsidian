@@ -141,8 +141,11 @@ yarn build
 # convert obsidian root certificate to PEM format
 openssl x509 -in obsidian-local-rest-api.crt -out rootCA.pem -outform PEM
 
-# run under inspector
+# run under inspector (release version)
 npx @modelcontextprotocol/inspector node dist/cli.js
+
+# run under inspector (source version)
+npx @modelcontextprotocol/inspector bun src/cli.ts
 ```
 
 ```json

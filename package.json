@@ -14,7 +14,9 @@
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js",
     "docker:build": "docker build -t mcp/obsidian:latest -f Dockerfile .",
-    "checks:knip": "knip"
+    "checks:knip": "knip",
+    "checks:format": "biome format --write --no-errors-on-unmatched",
+    "checks:lint": "biome lint --no-errors-on-unmatched"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
@@ -36,22 +38,12 @@
     "shx": "^0.4.0",
     "vitest": "^3.0.9"
   },
-  "files": [
-    "dist",
-    "config.secured.jsonc",
-    "LICENSE",
-    "README.md"
-  ],
+  "files": ["dist", "config.secured.jsonc", "LICENSE", "README.md"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PublikPrinciple/obsidian-mcp-rest.git"
   },
-  "keywords": [
-    "obsidian",
-    "mcp",
-    "rest-api",
-    "claude"
-  ],
+  "keywords": ["obsidian", "mcp", "rest-api", "claude"],
   "author": "PublikPrinciple",
   "license": "MIT",
   "bugs": {
