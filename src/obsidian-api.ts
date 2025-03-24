@@ -44,8 +44,9 @@ export class ObsidianAPI {
     addLogger(this.client, logger)
   }
 
+  // ref: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Vault%20Directories/get_vault_
   async listNotes(folder?: string): Promise<string[]> {
-    const response = await this.client.get("/vault")
+    const response = await this.client.get("/vault/")
     let files = response.data.files || []
 
     if (folder) {
@@ -55,6 +56,8 @@ export class ObsidianAPI {
     return files.filter((file: string) => file.endsWith(".md"))
   }
 
+  // ref1: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Vault%20Directories/get_vault__pathToDirectory__
+  // ref2: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Vault%20Files/get_vault__filename_
   async readNote(path: string): Promise<Note> {
     const response = await this.client.get(`/vault/${encodeURIComponent(path)}`)
     return {
@@ -68,8 +71,11 @@ export class ObsidianAPI {
     await this.client.put(`/vault/${encodeURIComponent(path)}`, { content })
   }
 
+  // ref1: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_
+  // ref2: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_simple_
   async searchNotes(query: string): Promise<Note[]> {
-    const response = await this.client.get("/search", { params: { query } })
+    const response = await this.client.post("/search/simple/", { query })
+
     // biome-ignore lint/suspicious/noExplicitAny: Make it simple
     return response.data.results.map((result: any) => ({
       path: result.path,

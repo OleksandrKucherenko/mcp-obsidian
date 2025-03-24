@@ -145,6 +145,32 @@ openssl x509 -in obsidian-local-rest-api.crt -out rootCA.pem -outform PEM
 npx @modelcontextprotocol/inspector node dist/cli.js
 ```
 
+```json
+{
+  "mcpServers": {
+    "mcp-obsidian": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--name",
+        "mcp-obsidian",
+        "--rm",
+        "-i",
+        "mcp/obsidian:latest",
+        "-e",
+        "API_KEY",
+        "-e",
+        "DEBUG"
+      ],
+      "env": {
+        "API_KEY": "your-api-key-here",
+        "DEBUG": "*"
+      }
+    }
+  }
+}
+```
+
 ## Troubleshooting
 
 ### Verify that Obsidian REST API is running
