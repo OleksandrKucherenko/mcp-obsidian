@@ -1,0 +1,43 @@
+# -------
+# Builder
+# -------
+
+FROM oven/bun:latest AS builder
+
+# Create app directory
+WORKDIR /app
+
+# Copy package.json
+# Copy source code and configuration files
+# default TS configuration and app configuration
+COPY ./package.json ./tsconfig.json ./config.secured.jsonc ./
+COPY ./src ./src
+
+# Install dependencies
+RUN bun install
+
+# Build the application
+RUN bun run build
+
+# -------
+# Release
+# -------
+
+FROM oven/bun:latest AS release
+
+# Create app directory
+WORKDIR /app
+
+# Copy files from builder stage
+COPY --from=builder /app/dist ./dist 
+COPY --from=builder /app/config.secured.jsonc /app/package.json /app/bun.lockb ./
+
+ENV NODE_ENV=production
+RUN bun install --production
+
+# environment variables for injecting via docker run command
+# ENV API_KEY=
+# ENV HOST=
+# ENV PORT=
+
+ENTRYPOINT ["bun", "dist/cli.js"]
