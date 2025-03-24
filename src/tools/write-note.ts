@@ -1,8 +1,8 @@
 import { BaseTool, type ToolResponse } from "./base-tool"
-import type { ObsidianAPI } from "../obsidian-api"
+import type { IObsidianAPI } from "../types"
 
 export class WriteNoteTool extends BaseTool {
-  constructor(api: ObsidianAPI) {
+  constructor(api: IObsidianAPI) {
     super(api, "writeNote", "Create or update a note", {
       type: "object",
       required: ["path", "content"],

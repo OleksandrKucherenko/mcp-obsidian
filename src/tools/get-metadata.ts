@@ -1,9 +1,9 @@
 import type { ToolResponse } from "../types"
 import { BaseTool } from "./base-tool"
-import type { ObsidianAPI } from "../obsidian-api"
+import type { IObsidianAPI } from "../types"
 
 export class GetMetadataTool extends BaseTool {
-  constructor(api: ObsidianAPI) {
+  constructor(api: IObsidianAPI) {
     super(api, "getMetadata", "Get metadata for a specific note", {
       type: "object",
       required: ["path"],

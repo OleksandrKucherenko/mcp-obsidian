@@ -1,8 +1,8 @@
 import { BaseTool, type ToolResponse } from "./base-tool"
-import type { ObsidianAPI } from "../obsidian-api"
+import type { IObsidianAPI } from "../types"
 
 export class ReadNoteTool extends BaseTool {
-  constructor(api: ObsidianAPI) {
+  constructor(api: IObsidianAPI) {
     super(api, "readNote", "Read the contents of a specific note", {
       type: "object",
       required: ["path"],

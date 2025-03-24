@@ -1,10 +1,10 @@
-import type { Server as Srv, ServerTransport, Tool } from "./types"
-import { ObsidianAPI } from "./obsidian-api"
-
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
-import { CallToolRequestSchema, ListToolsRequestSchema, ToolSchema } from "@modelcontextprotocol/sdk/types.js"
+import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
 
+import type { Server as Srv, ServerTransport, Tool } from "./types"
+import { type IObsidianAPI } from "./types"
+import { ObsidianAPI } from "./obsidian-api.v2"
 import { ListNotesTool, ReadNoteTool, WriteNoteTool, SearchNotesTool, GetMetadataTool } from "./tools"
 
 export interface ServerConfig {
@@ -24,7 +24,7 @@ export class ObsidianMCPServer implements Srv {
     version: string
     readOnly: boolean
   }
-  private api: ObsidianAPI
+  private api: IObsidianAPI
   private tools: Map<string, Tool>
   private server: Server
 
@@ -84,8 +84,10 @@ export class ObsidianMCPServer implements Srv {
       new ReadNoteTool(this.api),
       new SearchNotesTool(this.api),
       new GetMetadataTool(this.api),
-      // Write tools
-      ...(!this.config.readOnly ? [new WriteNoteTool(this.api)] : []),
+      ...(this.config.readOnly ? [] : [
+        // Write tools
+        new WriteNoteTool(this.api)
+      ]),
     ]
 
     for (const tool of tools) {

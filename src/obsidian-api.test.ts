@@ -1,63 +1,46 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { ObsidianAPI, type ObsidianConfig } from "./obsidian-api"
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+import { ObsidianAPI } from "./obsidian-api"
+import { ObsidianConfig } from "./types"
 import axios from "axios"
 
-// Mock axios
-vi.mock("axios", () => {
-  return {
-    default: {
-      create: vi.fn(() => ({
-        get: vi.fn(),
-        put: vi.fn(),
-      })),
-    },
-  }
-})
+// #region Mock dependencies
+vi.mock("axios", () => ({
+  default: {
+    create: vi.fn(() => ({
+      get: vi.fn(),
+      put: vi.fn(),
+    })),
+  },
+}))
+vi.mock("node:https", () => ({ default: { Agent: vi.fn() } }))
+vi.mock("debug", () => ({ debug: vi.fn(() => vi.fn()) }))
+vi.mock("axios-debug-log", () => ({ addLogger: vi.fn() }))
+// #endregion
 
-// Mock https
-vi.mock("node:https", () => {
-  return {
-    default: {
-      Agent: vi.fn(),
-    },
-  }
-})
-
-// Mock debug
-vi.mock("debug", () => {
-  return {
-    debug: vi.fn(() => vi.fn()),
-  }
-})
-
-// Mock axios-debug-log
-vi.mock("axios-debug-log", () => {
-  return {
-    addLogger: vi.fn(),
-  }
-})
+type MockedClient = {
+  get: ReturnType<typeof vi.fn>
+  put: ReturnType<typeof vi.fn>
+  post: ReturnType<typeof vi.fn>
+}
+const config: ObsidianConfig = {
+  apiKey: "test-api-key",
+  port: 27124,
+  host: "127.0.0.1",
+}
 
 describe("ObsidianAPI - Unit Tests", () => {
   let api: ObsidianAPI
-  let mockClient: {
-    get: ReturnType<typeof vi.fn>
-    put: ReturnType<typeof vi.fn>
-  }
-  const config: ObsidianConfig = {
-    apiKey: "test-api-key",
-    port: 27124,
-    host: "127.0.0.1",
-  }
+  let mockClient: MockedClient
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockClient = {
-      get: vi.fn(),
-      put: vi.fn(),
-    }
-    // Using correct type for mocked function
-    ;(axios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+    mockClient = { get: vi.fn(), put: vi.fn(), post: vi.fn() }
+      // Using correct type for mocked function
+      ; (axios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
     api = new ObsidianAPI(config)
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
   describe("constructor", () => {
@@ -89,7 +72,7 @@ describe("ObsidianAPI - Unit Tests", () => {
       })
 
       const result = await api.listNotes()
-      expect(mockClient.get).toHaveBeenCalledWith("/vault")
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/")
       expect(result).toEqual(["note1.md", "note2.md", "folder/note3.md"])
     })
 
@@ -101,7 +84,7 @@ describe("ObsidianAPI - Unit Tests", () => {
       })
 
       const result = await api.listNotes("folder")
-      expect(mockClient.get).toHaveBeenCalledWith("/vault")
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/")
       expect(result).toEqual(["folder/note2.md", "folder/subfolder/note3.md"])
     })
 

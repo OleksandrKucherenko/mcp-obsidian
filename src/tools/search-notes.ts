@@ -1,9 +1,9 @@
 import type { ToolResponse } from "../types"
 import { BaseTool } from "./base-tool"
-import type { ObsidianAPI } from "../obsidian-api"
+import type { IObsidianAPI } from "../types"
 
 export class SearchNotesTool extends BaseTool {
-  constructor(api: ObsidianAPI) {
+  constructor(api: IObsidianAPI) {
     super(api, "searchNotes", "Search for notes using a query string", {
       type: "object",
       required: ["query"],

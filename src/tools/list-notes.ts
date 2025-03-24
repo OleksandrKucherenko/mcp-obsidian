@@ -1,8 +1,8 @@
 import { BaseTool, type ToolResponse } from "./base-tool"
-import type { ObsidianAPI } from "../obsidian-api"
+import type { IObsidianAPI } from "../types"
 
 export class ListNotesTool extends BaseTool {
-  constructor(api: ObsidianAPI) {
+  constructor(api: IObsidianAPI) {
     super(api, "listNotes", "List all notes in the vault or a specific folder", {
       type: "object",
       properties: {

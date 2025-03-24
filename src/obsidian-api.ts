@@ -2,20 +2,14 @@ import axios, { type AxiosInstance } from "axios"
 import { addLogger } from "axios-debug-log"
 import { debug } from "debug"
 import https from "node:https"
+import { IObsidianAPI, Note, ObsidianConfig } from "./types"
 
-export interface ObsidianConfig {
-  apiKey: string
-  port: number
-  host: string
-}
-
-export interface Note {
-  path: string
-  content: string
-  metadata?: Record<string, unknown>
-}
-
-export class ObsidianAPI {
+/**
+ * V1 implementation of the Obsidian API
+ * Note: This implementation has some integration issues
+ * @deprecated Consider using the v2 implementation for correct API integration
+ */
+export class ObsidianAPI implements IObsidianAPI {
   private client: AxiosInstance
 
   constructor(config: ObsidianConfig) {
@@ -71,17 +65,30 @@ export class ObsidianAPI {
     await this.client.put(`/vault/${encodeURIComponent(path)}`, { content })
   }
 
-  // ref1: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_
-  // ref2: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_simple_
-  async searchNotes(query: string): Promise<Note[]> {
-    const response = await this.client.post("/search/simple/", { query })
+  // ref: https://coddingtonbear.github.io/obsidian-local-rest-api/#/Search/post_search_simple_
+  async searchNotes(query: string, contextLength: number = 100): Promise<Note[]> {
+    // API expects query parameters, not a request body
+    const response = await this.client.post(
+      "/search/simple/",
+      null,
+      { params: { query, contextLength } }
+    )
 
-    // biome-ignore lint/suspicious/noExplicitAny: Make it simple
-    return response.data.results.map((result: any) => ({
-      path: result.path,
-      content: result.content,
-      metadata: result.metadata,
-    }))
+    // Transform the API response to match the Note interface
+    // The API returns an array of search results with filename and matches
+    // biome-ignore lint/suspicious/noExplicitAny: Necessary for dynamic API response
+    return (response.data || []).map((result: any) => {
+      // Combine all match contexts into a single content string
+      const content = result.matches
+        ?.map((match: any) => match.context || "")
+        .join("\n\n") || "";
+
+      return {
+        path: result.filename,
+        content,
+        metadata: { score: result.score },
+      };
+    });
   }
 
   async getMetadata(path: string): Promise<Record<string, unknown>> {
