@@ -7,13 +7,13 @@
     "mcp-obsidian": "./dist/cli.js"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc && shx chmod +x dist/cli.js",
-    "prepare": "tsc",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && shx chmod +x dist/cli.js",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --passWithNoTests",
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js",
     "docker:build": "docker build -t mcp/obsidian:latest -f Dockerfile .",
+    "docker:bun": "docker build -t mcp/obsidian:bun -f Dockerfile.bun .",
     "checks:knip": "knip",
     "checks:format": "biome format --write --no-errors-on-unmatched",
     "checks:lint": "biome lint --no-errors-on-unmatched"

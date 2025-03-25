@@ -1,11 +1,11 @@
+FROM node:22.12-alpine AS base
+WORKDIR /app
+
 # -------
 # Builder
 # -------
 
-FROM node:22.12-alpine AS builder
-
-# Create app directory
-WORKDIR /app
+FROM base AS builder
 
 # Copy package.json
 # Copy source code and configuration files
@@ -24,10 +24,7 @@ RUN npm run build
 # Release
 # -------
 
-FROM node:22-alpine AS release
-
-# Create app directory
-WORKDIR /app
+FROM base AS release
 
 # Copy files from builder stage
 COPY --from=builder /app/dist ./dist 
