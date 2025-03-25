@@ -169,7 +169,26 @@ npx @modelcontextprotocol/inspector bun src/cli.ts
         "API_KEY": "your-api-key-here",
         "DEBUG": "*"
       }
-    }
+    },
+    "mcp-obsidian-bun": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--name",
+        "mcp-obsidian-bun",
+        "--rm",
+        "-i",
+        "mcp/obsidian:bun",
+        "-e",
+        "API_KEY",
+        "-e",
+        "DEBUG"
+      ],
+      "env": {
+        "API_KEY": "your-api-key-here",
+        "DEBUG": "*"
+      }
+    }    
   }
 }
 ```

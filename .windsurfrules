@@ -1,0 +1,2 @@
+1. Keep compatibility with YARN, BUN and NPM
+2. Use YARN by default for all operations related to project dependencies

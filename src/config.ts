@@ -6,8 +6,8 @@ import { debug } from "debug"
 declare namespace NodeJS {
   interface ProcessEnv {
     API_KEY: string
-    HOST: string
-    PORT: string
+    MCP_HOST: string
+    MCP_PORT: string
   }
 }
 
@@ -24,8 +24,8 @@ export function loadConfig(configPath?: string): ServerConfig {
 
   // environment variables if they available override the config file
   config.obsidian.apiKey = process.env.API_KEY ?? config.obsidian.apiKey
-  config.obsidian.host = process.env.HOST ?? config.obsidian.host
-  config.obsidian.port = Number.parseInt(process.env.PORT ?? `${config.obsidian.port}`, 10)
+  config.obsidian.host = process.env.MCP_HOST ?? config.obsidian.host
+  config.obsidian.port = Number.parseInt(process.env.MCP_PORT ?? `${config.obsidian.port}`, 10)
 
   // try to validate the apiKey from config, for matching pattern /^[a-zA-Z0-9]{32,}$/
   // default key size from Obsidian Local REST API plugin is 64 characters

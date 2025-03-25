@@ -34,8 +34,8 @@ ENV NODE_ENV=production
 RUN npm ci --ignore-scripts --omit-dev
 
 # environment variables for injecting via docker run command
-# ENV API_KEY=
-# ENV HOST=
-# ENV PORT=
+# ENV API_KEY=secret
+# ENV MCP_HOST=https://localhost
+# ENV MCP_PORT=27124
 
 ENTRYPOINT ["node", "dist/cli.js"]
