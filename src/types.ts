@@ -29,12 +29,6 @@ export interface IObsidianAPI {
   getMetadata(path: string): Promise<Record<string, unknown>>
 }
 
-export interface Tool {
-  getName(): string
-  getDefinition(): ToolDefinition
-  execute(args: Record<string, unknown>): Promise<ToolResponse>
-}
-
 export interface ToolDefinition {
   name: string
   description: string
@@ -47,6 +41,12 @@ export interface ToolResponse {
     text: string
   }>
   isError?: boolean
+}
+
+export interface Tool {
+  getName(): string
+  getDefinition(): ToolDefinition
+  execute(args: Record<string, unknown>): Promise<ToolResponse>
 }
 
 export interface Server {
@@ -65,4 +65,16 @@ export interface ServerTransport {
 
 export interface Config {
   config?: string
+}
+export interface ToolResponse {
+  content: Array<{
+    type: string
+    text: string
+  }>
+  isError?: boolean
+}
+export interface ToolDefinition {
+  name: string
+  description: string
+  inputSchema: object
 }

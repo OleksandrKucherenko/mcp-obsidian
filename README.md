@@ -198,14 +198,33 @@ npx @modelcontextprotocol/inspector bun src/cli.ts
 ### Verify that Obsidian REST API is running
 
 ```bash
+# windows CMD, verify that port is listening (that rest api is running)
+netstat -an | findstr 27124
+
 # curl with --insecure to accept self-signed certificate
 curl --insecure https://localhost:27124
 
 # If using WSL with Obsidian REST API running on Windows host
 curl --insecure https://host.docker.internal:27124
 
+# Windows Defender Firewall / Inbound Rules. Press Win+R and type WF.msc or firewall.cpl
+WF.msc
+firewall.cpl # and then press 'Advanced settings'
+
 # Add firewall rule to allow port 27124 (Run in Admin PowerShell)
-New-NetFirewallRule -DisplayName "Allow Port 27124" -Direction Inbound -LocalPort 27124 -Protocol TCP -Action Allow
+New-NetFirewallRule -DisplayName "WSL2 Obsidian REST API" -Direction Inbound -LocalPort 27123,27124 -Protocol TCP -Action Allow
+
+# check firewall rules (CMD) that manage 27124 port
+netsh advfirewall firewall show rule name=all | findstr /C:"Rule Name" /C:"LocalPort" /C:"RemotePort" | findstr /C:"27124"
+
+# display rules that has WSL2 keyword in own name
+netsh advfirewall firewall show rule name=all | grep -A 13 WSL2
+
+# display rule definition by port number (4 line after, 9 lines before)
+netsh advfirewall firewall show rule name=all | grep -A 4 -B 9 27124 
+
+# Isssue: all those methods does not allow to find port if used range of ports, example: 20000-30000
+# in this case those simple methods will not work.
 ```
 
 ### Using from WSL

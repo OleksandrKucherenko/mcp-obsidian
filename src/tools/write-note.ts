@@ -1,5 +1,5 @@
-import { BaseTool, type ToolResponse } from "./base-tool"
-import type { IObsidianAPI } from "../types"
+import type { IObsidianAPI, ToolResponse } from "../types"
+import { BaseTool } from "./base-tool"
 
 export class WriteNoteTool extends BaseTool {
   constructor(api: IObsidianAPI) {

@@ -1,19 +1,4 @@
-import type { Tool } from "../types"
-import type { IObsidianAPI } from "../types"
-
-export interface ToolResponse {
-  content: Array<{
-    type: string
-    text: string
-  }>
-  isError?: boolean
-}
-
-export interface ToolDefinition {
-  name: string
-  description: string
-  inputSchema: object
-}
+import type { IObsidianAPI, Tool, ToolDefinition, ToolResponse } from "../types"
 
 export abstract class BaseTool implements Tool {
   protected api: IObsidianAPI

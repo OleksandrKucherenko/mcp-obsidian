@@ -1,6 +1,5 @@
-import type { ToolResponse } from "../types"
+import type { IObsidianAPI, ToolResponse } from "../types"
 import { BaseTool } from "./base-tool"
-import type { IObsidianAPI } from "../types"
 
 export class SearchNotesTool extends BaseTool {
   constructor(api: IObsidianAPI) {

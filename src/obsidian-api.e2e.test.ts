@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest"
-import { ObsidianAPI, type ObsidianConfig } from "./obsidian-api"
+import type { IObsidianAPI, ObsidianConfig } from "./types"
+import { ObsidianAPI } from "./obsidian-api.v2"
 import axios from "axios"
 import https from "node:https"
 
@@ -34,7 +35,7 @@ describe("ObsidianAPI - E2E Tests", () => {
   }
 
   let hostAvailable = false
-  let api: ObsidianAPI
+  let api: IObsidianAPI
 
   beforeAll(async () => {
     // Check if the Obsidian REST API server is available
