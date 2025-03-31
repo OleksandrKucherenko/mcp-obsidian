@@ -289,6 +289,21 @@ npm install -g .
 npm install -g typescript
 ```
 
+### Release and Versioning
+
+```bash
+# install globally tools
+npm install commitizen -g
+npm install --global cz-vinyl
+
+# now you can do the releases
+git add .
+git cz 
+
+# when all commited, ask for release producing
+yarn release
+```
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
