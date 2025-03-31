@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { ObsidianAPI } from "./obsidian-api"
-import type { ObsidianConfig } from "./types"
+import type { ObsidianConfig, IObsidianAPI } from "./types"
 import axios from "axios"
 
 // #region Mock dependencies
@@ -9,7 +9,9 @@ vi.mock("axios", () => ({
     create: vi.fn(() => ({
       get: vi.fn(),
       put: vi.fn(),
+      post: vi.fn(),
     })),
+    isAxiosError: vi.fn((error) => error && error.response !== undefined),
   },
 }))
 vi.mock("node:https", () => ({ default: { Agent: vi.fn() } }))
@@ -29,7 +31,7 @@ const config: ObsidianConfig = {
 }
 
 describe("ObsidianAPI - Unit Tests", () => {
-  let api: ObsidianAPI
+  let api: IObsidianAPI
   let mockClient: MockedClient
 
   beforeEach(() => {
@@ -84,8 +86,8 @@ describe("ObsidianAPI - Unit Tests", () => {
       })
 
       const result = await api.listNotes("folder")
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/")
-      expect(result).toEqual(["folder/note2.md", "folder/subfolder/note3.md"])
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder/")
+      expect(result).toEqual(["note1.md", "folder/note2.md", "folder/subfolder/note3.md"])
     })
 
     it("should handle empty response", async () => {
@@ -128,20 +130,33 @@ describe("ObsidianAPI - Unit Tests", () => {
   describe("searchNotes", () => {
     it("should search for notes matching the query", async () => {
       const query = "test query"
-      const results = [
-        { path: "note1.md", content: "content1", metadata: { tag: "test" } },
-        { path: "note2.md", content: "content2", metadata: null },
+      const apiResponse = [
+        { 
+          filename: "note1.md", 
+          score: 0.75,
+          matches: [{ context: "content1" }] 
+        },
+        { 
+          filename: "note2.md", 
+          score: 0.5,
+          matches: [{ context: "content2" }] 
+        },
+      ]
+      
+      const expectedResults = [
+        { path: "note1.md", content: "content1", metadata: { score: 0.75 } },
+        { path: "note2.md", content: "content2", metadata: { score: 0.5 } },
       ]
 
-      mockClient.get.mockResolvedValueOnce({
-        data: { results },
+      mockClient.post.mockResolvedValueOnce({
+        data: apiResponse,
       })
 
       const result = await api.searchNotes(query)
-      expect(mockClient.get).toHaveBeenCalledWith("/search", {
-        params: { query },
+      expect(mockClient.post).toHaveBeenCalledWith("/search/simple/", null, {
+        params: { query, contextLength: 100 },
       })
-      expect(result).toEqual(results)
+      expect(result).toEqual(expectedResults)
     })
   })
 
@@ -155,7 +170,7 @@ describe("ObsidianAPI - Unit Tests", () => {
       })
 
       const result = await api.getMetadata(path)
-      expect(mockClient.get).toHaveBeenCalledWith("/metadata/folder%2Fnote.md")
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", { headers: { "Accept": "application/vnd.olrapi.note+json" } })
       expect(result).toEqual(metadata)
     })
   })

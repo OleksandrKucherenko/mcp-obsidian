@@ -17,6 +17,18 @@ export interface Note {
   metadata?: Record<string, unknown>
 }
 
+export interface NoteJson {
+  content: string;
+  frontmatter: Record<string, unknown>;
+  path: string;
+  stat: {
+    ctime: number;
+    mtime: number;
+    size: number;
+  };
+  tags: string[];
+}
+
 /**
  * Interface defining the contract for Obsidian API implementations
  * This allows v2 to be a drop-in replacement for v1 while maintaining correct API integration
@@ -26,7 +38,7 @@ export interface IObsidianAPI {
   readNote(path: string): Promise<Note>
   writeNote(path: string, content: string): Promise<void>
   searchNotes(query: string, contextLength?: number): Promise<Note[]>
-  getMetadata(path: string): Promise<Record<string, unknown>>
+  getMetadata(path: string): Promise<NoteJson>
 }
 
 export interface ToolDefinition {

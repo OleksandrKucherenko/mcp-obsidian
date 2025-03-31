@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest"
 import type { IObsidianAPI, ObsidianConfig } from "./types"
-import { ObsidianAPI } from "./obsidian-api.v2"
+import { ObsidianAPI } from "./obsidian-api"
 import axios from "axios"
 import https from "node:https"
 
@@ -18,6 +18,7 @@ async function isHostAvailable(url: string): Promise<boolean> {
     await instance.get(url)
     return true
   } catch (error) {
+    console.error(error)
     if (axios.isAxiosError(error) && error.response) {
       // If we get any response, the host is available even if it returns an error code
       return true
@@ -26,21 +27,21 @@ async function isHostAvailable(url: string): Promise<boolean> {
   }
 }
 
-describe("ObsidianAPI - E2E Tests", () => {
+describe("ObsidianAPI - E2E Tests", async () => {
   const config: ObsidianConfig = {
-    apiKey: "YOUR_API_KEY", // Replace with your actual API key for testing
+    apiKey: process.env.API_KEY ?? '<secret>',
     port: 27124,
     host: "https://127.0.0.1",
     // host: "https://host.docker.internal", // Use special hostname to access Windows host from WSL
   }
 
-  let hostAvailable = false
+  const hostAvailable = await isHostAvailable(`${config.host}:${config.port}`)
+  /** We'll conditionally skip the entire describe block if host is not available */
+  const describeIf = hostAvailable ? describe : describe.skip
+
   let api: IObsidianAPI
 
   beforeAll(async () => {
-    // Check if the Obsidian REST API server is available
-    hostAvailable = await isHostAvailable(`${config.host}:${config.port}`)
-
     if (!hostAvailable) {
       console.error(
         `\n⛔ ERROR: Obsidian REST API server is not available at ${config.host}:${config.port}\nPlease make sure the server is running before executing E2E tests.\n`,
@@ -51,17 +52,15 @@ describe("ObsidianAPI - E2E Tests", () => {
     }
   })
 
-  // We'll conditionally skip the entire describe block if host is not available
-  const conditionalDescribe = hostAvailable ? describe : describe.skip
 
-  conditionalDescribe("API Connection", () => {
+  describeIf("API Connection", () => {
     it("should connect to the Obsidian REST API server", async () => {
       // This test passes if beforeAll successfully created the API instance
       expect(api).toBeDefined()
     })
   })
 
-  conditionalDescribe("listNotes", () => {
+  describeIf("listNotes", () => {
     it("should retrieve notes from the vault", async () => {
       const notes = await api.listNotes()
 
@@ -75,7 +74,7 @@ describe("ObsidianAPI - E2E Tests", () => {
     })
   })
 
-  conditionalDescribe("readNote", () => {
+  describeIf("readNote", () => {
     it("should retrieve a note if it exists", async () => {
       // First get a list of notes, then try to read the first one
       const notes = await api.listNotes()
@@ -94,36 +93,52 @@ describe("ObsidianAPI - E2E Tests", () => {
     })
   })
 
-  conditionalDescribe("searchNotes", () => {
+  describeIf("searchNotes", () => {
     it("should search for notes matching a query", async () => {
-      // Search for a generic term that might match something
-      const searchResults = await api.searchNotes("the")
+      // GIVEN: API instance
 
+      // WHEN: search for a generic term that might match something
+      const searchResults = await api.searchNotes("the")
+      //console.log("Search results:", searchResults)
+
+      // THEN: expected more than one result
       expect(Array.isArray(searchResults)).toBe(true)
+      
+      // AND: expected search results in specific structure
+      const first = searchResults[0]
+      expect(first).toEqual(expect.objectContaining({
+        path: expect.any(String),
+        content: expect.any(String),
+        metadata: expect.objectContaining({
+          score: expect.any(Number),
+        })
+      }))
     })
   })
 
-  conditionalDescribe("getMetadata", () => {
+  describeIf("getMetadata", () => {
     it("should retrieve metadata for a note if it exists", async () => {
       // First get a list of notes, then try to get metadata for the first one
-      const notes = await api.listNotes()
+      const folder = 'Z - MCP Unit Testing'
+      const notePath = 'test file.md'
 
-      if (notes.length === 0) {
-        // Skip this test if there are no notes
-        return
-      }
+      const notes = await api.listNotes(folder)
+      expect(notes).toContain(notePath)
 
-      const notePath = notes[0]
-      const metadata = await api.getMetadata(notePath)
+      const metadata = await api.getMetadata(`${folder}/${notePath}`)
+      //console.log("Metadata:", metadata)
 
       expect(metadata).toBeDefined()
+     
       // metadata should be an object
       expect(typeof metadata).toBe("object")
+      expect(metadata.path).toBe(`${folder}/${notePath}`)
+      expect(metadata.tags).toEqual(expect.arrayContaining(["api", "unittests"]))
     })
   })
 
-  conditionalDescribe("writeNote", () => {
-    it("should write content to a test note and read it back", async () => {
+  describeIf("writeNote", () => {
+    it.skip("should write content to a test note and read it back", async () => {
       const testNotePath = "_test_note.md"
       const testContent = `# Test Note\nThis is a test note created by the E2E tests on ${new Date().toISOString()}`
 

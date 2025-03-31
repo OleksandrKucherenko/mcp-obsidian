@@ -3,7 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
 
 import type { IObsidianAPI, Server as Srv, ServerTransport, Tool } from "./types"
-import { ObsidianAPI } from "./obsidian-api.v2"
+import { ObsidianAPI } from "./obsidian-api"
 import { ListNotesTool, ReadNoteTool, WriteNoteTool, SearchNotesTool, GetMetadataTool } from "./tools"
 
 export interface ServerConfig {
