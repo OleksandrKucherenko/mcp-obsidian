@@ -67,11 +67,12 @@
   "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme",
   "volta": {
     "node": "22.12.0",
-    "yarn": "4.7.0"
+    "yarn": "4.8.1"
   },
   "config": {
     "commitizen": {
       "path": "cz-vinyl"
     }
-  }
+  },
+  "packageManager": "yarn@4.8.1"
 }
