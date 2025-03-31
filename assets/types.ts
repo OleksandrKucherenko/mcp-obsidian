@@ -6,7 +6,7 @@ interface Error {
 
 interface NoteJson {
   content: string;
-  frontmatter: Record<string, any>;
+  frontmatter: Record<string, unknown>;
   path: string;
   stat: {
     ctime: number;
@@ -68,7 +68,7 @@ type PostNote = (request: PostNoteRequest) => Promise<PostNoteResponse>;
 type PutNote = (request: PostNoteRequest) => Promise<void>;
 
 // Exported API Methods
-export {
+export type {
   Error,
   NoteJson,
   GetStatusResponse,

@@ -10,7 +10,7 @@ FROM base AS builder
 # Copy package.json
 # Copy source code and configuration files
 # default TS configuration and app configuration
-COPY ./package.json ./tsconfig.json ./config.secured.jsonc ./
+COPY ./package.json ./tsconfig.json ./tsconfig.build.json ./config.secured.jsonc ./
 COPY ./src ./src
 
 # Install dependencies
