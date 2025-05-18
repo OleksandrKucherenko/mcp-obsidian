@@ -34,3 +34,6 @@ src/**/*.spec.ts
 coverage*
 report*
 dist
+
+# secrets
+.secrets
