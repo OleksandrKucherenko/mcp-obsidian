@@ -12,6 +12,7 @@
     "test:watch": "vitest --passWithNoTests",
     "lint": "eslint src/**/*.ts",
     "start": "node dist/cli.js",
+    "start:dev": "bun run src/cli.ts",
     "docker:build": "docker build -t mcp/obsidian:latest -f Dockerfile .",
     "docker:bun": "docker build -t mcp/obsidian:bun -f Dockerfile.bun .",
     "checks:knip": "knip",
@@ -25,6 +26,7 @@
     "axios-debug-log": "^1.0.0",
     "debug": "^4.4.0",
     "json5": "^2.2.3",
+    "ts-dedent": "^2.2.0",
     "typescript": "^5.8.2",
     "yargs": "^17.7.2"
   },
@@ -68,20 +70,12 @@
   "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme",
   "volta": {
     "node": "22.12.0",
-<<<<<<< HEAD
-    "yarn": "4.8.1"
-=======
     "yarn": "4.9.1"
->>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
   },
   "config": {
     "commitizen": {
       "path": "cz-vinyl"
     }
   },
-<<<<<<< HEAD
-  "packageManager": "yarn@4.8.1"
-=======
   "packageManager": "yarn@4.9.1"
->>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
 }

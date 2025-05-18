@@ -1,5 +1,17 @@
 # Assets
 
+## Obsidian Setup
+
+Go To: Settings -> Community plugins / Local REST API
+
+Check - "Show advanced settings"
+
+Change "Binding Host" to `0.0.0.0` - this will allow the API to be accessible from any machine (we need this to allow docker instance to access the API).
+
+> Notes: Highly recommende to activate firewall, to protect API from unauthorized access. We still have one last line of defense active - the API key.
+
+![Obsidian Setup](obsidian-setup.png)
+
 ## Make Obsidian Local REST Server API trusted
 
 ```bash

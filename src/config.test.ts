@@ -24,7 +24,7 @@ describe("Configuration", () => {
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(mockConfig))
 
     // exclude our dependencies
-    const { API_KEY, MCP_HOST, MCP_PORT, ...rest } = process.env
+    const { API_KEY, API_HOST, API_PORT, ...rest } = process.env
     process.env = { ...rest }
   })
 
@@ -60,8 +60,8 @@ describe("Configuration", () => {
   it("should override config with environment variables when provided", () => {
     // Setup environment variables
     process.env.API_KEY = "env-api-key"
-    process.env.MCP_HOST = "env-host"
-    process.env.MCP_PORT = "8080"
+    process.env.API_HOST = "env-host"
+    process.env.API_PORT = "8080"
 
     // Call the loadConfig function
     const config = loadConfig("config.json")

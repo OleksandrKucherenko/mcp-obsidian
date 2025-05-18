@@ -9,11 +9,8 @@ const logger = debug("mcp:obsidian-api")
 /** Obsidian Local REST API client. */
 export class ObsidianAPI implements IObsidianAPI {
   private client: AxiosInstance
-<<<<<<< HEAD
   private timeout = 10_000
-=======
   private readonly logger: ReturnType<typeof debug>
->>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
 
   constructor(config: ObsidianConfig) {
     // support HTTPs
@@ -38,12 +35,8 @@ export class ObsidianAPI implements IObsidianAPI {
       timeout: this.timeout,
     })
 
-<<<<<<< HEAD
-    addLogger(this.client, logger)
-=======
     this.logger = debug("mcp:obsidian-api")
     addLogger(this.client, this.logger)
->>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
   }
 
   /** Wraps API calls with error handling */
@@ -79,14 +72,19 @@ export class ObsidianAPI implements IObsidianAPI {
   }
 
   /** Read content of a note. */
-  async readNote(path: string): Promise<Note> {
+  async readNote(filePath: string): Promise<Note> {
     return this.safeCall(async () => {
-      const response = await this.client.get(`/vault/${encodeURIComponent(path)}`)
-      
+      const response = await this.client.get(`/vault/${encodeURIComponent(filePath)}`, {
+        headers: { Accept: "application/vnd.olrapi.note+json" },
+      })
+
+      const { frontmatter, tags, stat, path, content } = response.data
+      const metadata = { frontmatter, tags, stat }
+
       return {
         path,
-        content: response.data.content,
-        metadata: response.data.metadata,
+        content,
+        metadata,
       }
     })
   }
@@ -94,7 +92,11 @@ export class ObsidianAPI implements IObsidianAPI {
   /** Write content to a note. */
   async writeNote(path: string, content: string): Promise<void> {
     return this.safeCall(async () => {
-      await this.client.put(`/vault/${encodeURIComponent(path)}`, { content })
+      await this.client.put(`/vault/${encodeURIComponent(path)}`, content, {
+        headers: {
+          "Content-Type": "text/markdown",
+        },
+      })
     })
   }
 
@@ -127,7 +129,7 @@ export class ObsidianAPI implements IObsidianAPI {
 
   /** Retrieves metadata for a specific note. */
   async getMetadata(path: string): Promise<NoteJson> {
-    const headers = { "Accept": "application/vnd.olrapi.note+json" }
+    const headers = { Accept: "application/vnd.olrapi.note+json" }
     return this.safeCall(async () => {
       const response = await this.client.get<NoteJson>(`/vault/${encodeURIComponent(path)}`, { headers })
       return response.data

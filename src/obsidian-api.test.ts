@@ -104,11 +104,13 @@ describe("ObsidianAPI - Unit Tests", () => {
       const metadata = { tags: ["test"] }
 
       mockClient.get.mockResolvedValueOnce({
-        data: { content, metadata },
+        data: { path, content, ...metadata },
       })
 
       const result = await api.readNote(path)
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md")
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", {
+        headers: { Accept: "application/vnd.olrapi.note+json" },
+      })
       expect(result).toEqual({ path, content, metadata })
     })
   })
@@ -121,8 +123,8 @@ describe("ObsidianAPI - Unit Tests", () => {
       mockClient.put.mockResolvedValueOnce({})
 
       await api.writeNote(path, content)
-      expect(mockClient.put).toHaveBeenCalledWith("/vault/folder%2Fnote.md", {
-        content,
+      expect(mockClient.put).toHaveBeenCalledWith("/vault/folder%2Fnote.md", content, {
+        headers: { "Content-Type": "text/markdown" },
       })
     })
   })
