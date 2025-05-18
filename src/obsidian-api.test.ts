@@ -131,18 +131,18 @@ describe("ObsidianAPI - Unit Tests", () => {
     it("should search for notes matching the query", async () => {
       const query = "test query"
       const apiResponse = [
-        { 
-          filename: "note1.md", 
+        {
+          filename: "note1.md",
           score: 0.75,
-          matches: [{ context: "content1" }] 
+          matches: [{ context: "content1" }],
         },
-        { 
-          filename: "note2.md", 
+        {
+          filename: "note2.md",
           score: 0.5,
-          matches: [{ context: "content2" }] 
+          matches: [{ context: "content2" }],
         },
       ]
-      
+
       const expectedResults = [
         { path: "note1.md", content: "content1", metadata: { score: 0.75 } },
         { path: "note2.md", content: "content2", metadata: { score: 0.5 } },
@@ -170,7 +170,9 @@ describe("ObsidianAPI - Unit Tests", () => {
       })
 
       const result = await api.getMetadata(path)
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", { headers: { "Accept": "application/vnd.olrapi.note+json" } })
+      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", {
+        headers: { Accept: "application/vnd.olrapi.note+json" },
+      })
       expect(result).toEqual(metadata)
     })
   })

@@ -9,7 +9,11 @@ const logger = debug("mcp:obsidian-api")
 /** Obsidian Local REST API client. */
 export class ObsidianAPI implements IObsidianAPI {
   private client: AxiosInstance
+<<<<<<< HEAD
   private timeout = 10_000
+=======
+  private readonly logger: ReturnType<typeof debug>
+>>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
 
   constructor(config: ObsidianConfig) {
     // support HTTPs
@@ -34,7 +38,12 @@ export class ObsidianAPI implements IObsidianAPI {
       timeout: this.timeout,
     })
 
+<<<<<<< HEAD
     addLogger(this.client, logger)
+=======
+    this.logger = debug("mcp:obsidian-api")
+    addLogger(this.client, this.logger)
+>>>>>>> 9d52f15 (test: ✅ [AB-0001] fixed search tests)
   }
 
   /** Wraps API calls with error handling */

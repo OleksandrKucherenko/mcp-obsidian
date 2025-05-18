@@ -1,11 +1,8 @@
 # Assets
 
-## OpenAPI definition
+## Make Obsidian Local REST Server API trusted
 
 ```bash
-# download definition
-curl https://coddingtonbear.github.io/obsidian-local-rest-api/openapi.yaml -o openapi-obsidian-local-rest-api.yaml
-
 # download certificate
 curl https://127.0.0.1:27124/obsidian-local-rest-api.crt -o obsidian-local-rest-api.crt
 ln -s obsidian-local-rest-api.crt rootCA.crt
@@ -15,6 +12,13 @@ openssl x509 -in obsidian-local-rest-api.crt -out rootCA.pem -outform PEM
 
 # install CA ROOT certificates from repo
 CAROOT=$(pwd) mkcert -install
+```
+
+## OpenAPI definition
+
+```bash
+# download definition
+curl https://coddingtonbear.github.io/obsidian-local-rest-api/openapi.yaml -o openapi-obsidian-local-rest-api.yaml
 
 # generate Client code from OpenAPI definition
 # ref: https://github.com/hey-api/openapi-ts
@@ -33,4 +37,7 @@ npx @openapitools/openapi-generator-cli generate -i openapi-obsidian-local-rest-
 
 ```bash
 npx @modelcontextprotocol/inspector bun run src/cli.ts
+
+# ALTERNATIVES:
+bunx @modelcontextprotocol/inspector
 ```
