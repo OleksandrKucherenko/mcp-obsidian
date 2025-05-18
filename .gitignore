@@ -1,7 +1,28 @@
+# OS files
+.DS_Store
+
+# dependencies and build artifacts
 node_modules/
 dist/
 coverage/
-.env
+
+# local overrides of environment variables
+.env.local
 config.json
+
+# any logs
 *.log
-.DS_Store
+
+# Yarn files
+.yarn/cache
+
+# lock files
+yarn.lock
+package-lock.json
+bun.lock*
+
+# DIRENV for secret injecting
+# .envrc
+
+# secrets folder
+.secrets

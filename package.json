@@ -1,38 +1,54 @@
 {
   "name": "obsidian-mcp-rest",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "MCP server implementation for accessing Obsidian via local REST API",
   "main": "dist/index.js",
-  "type": "module",
   "bin": {
-    "obsidian-mcp-rest": "./dist/cli.js"
+    "mcp-obsidian": "./dist/cli.js"
   },
   "scripts": {
-    "build": "npx tsc",
-    "prepare": "npx tsc",
-    "test": "jest",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && shx chmod +x dist/cli.js",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
     "lint": "eslint src/**/*.ts",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js",
+    "start:dev": "bun run src/cli.ts",
+    "docker:build": "docker build -t mcp/obsidian:latest -f Dockerfile .",
+    "docker:bun": "docker build -t mcp/obsidian:bun -f Dockerfile.bun .",
+    "checks:knip": "knip",
+    "checks:format": "biome format --write --no-errors-on-unmatched",
+    "checks:lint": "biome lint --no-errors-on-unmatched",
+    "release": "release-it -VV"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.17.1",
-    "axios": "^1.6.0",
-    "yargs": "^17.7.2",
-    "dotenv": "^16.3.1",
-    "typescript": "^5.0.0"
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "axios": "^1.8.4",
+    "axios-debug-log": "^1.0.0",
+    "debug": "^4.4.0",
+    "json5": "^2.2.3",
+    "ts-dedent": "^2.2.0",
+    "typescript": "^5.8.2",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "@types/node": "^20.0.0",
-    "@types/yargs": "^17.0.32",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.0.0",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0"
+    "@biomejs/biome": "1.9.4",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^20.17.25",
+    "@types/yargs": "^17.0.33",
+    "@vitest/coverage-v8": "^3.0.9",
+    "auto-changelog": "^2.5.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "cz-vinyl": "^2.5.4",
+    "eslint": "^9.23.0",
+    "knip": "^5.46.0",
+    "release-it": "^18.1.2",
+    "shx": "^0.4.0",
+    "vitest": "^3.0.9"
   },
   "files": [
     "dist",
+    "config.secured.jsonc",
     "LICENSE",
     "README.md"
   ],
@@ -51,5 +67,15 @@
   "bugs": {
     "url": "https://github.com/PublikPrinciple/obsidian-mcp-rest/issues"
   },
-  "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme"
+  "homepage": "https://github.com/PublikPrinciple/obsidian-mcp-rest#readme",
+  "volta": {
+    "node": "22.12.0",
+    "yarn": "4.9.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-vinyl"
+    }
+  },
+  "packageManager": "yarn@4.9.1"
 }

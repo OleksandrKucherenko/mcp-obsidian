@@ -1,0 +1,19 @@
+{
+  "name": "mcp-obsidian",
+  "version": "1.1.0",
+  // set to true to make the server propagate only read-only tools
+  // otherwise will be available write tools, for composing obsidian notes
+  // from MCP server side
+  "readOnly": true,
+  "obsidian": {
+    // add your API key here, or inject API_KEY environment variable
+    "apiKey": "",
+    // Obsidian Local REST API publish two ports:
+    // - 27123 (unsecure, not enabled by default)
+    // - 27124 (default, secured)
+    "port": 27124,
+    // export WSL_GATEWAY_IP=$(ip route show | grep -i default | awk '{ print $3}')
+    // supported protocols: http, https or just a host name (HTTP in this case)
+    "host": "https://${WSL_GATEWAY_IP}"
+  }
+}
