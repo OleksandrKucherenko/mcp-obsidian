@@ -1,29 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { ObsidianAPI } from "./obsidian-api"
-import type { ObsidianConfig, IObsidianAPI } from "./types"
 import axios from "axios"
+import nock from "nock"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-// #region Mock dependencies
-vi.mock("axios", () => ({
-  default: {
-    create: vi.fn(() => ({
-      get: vi.fn(),
-      put: vi.fn(),
-      post: vi.fn(),
-    })),
-    isAxiosError: vi.fn((error) => error && error.response !== undefined),
-  },
-}))
-vi.mock("node:https", () => ({ default: { Agent: vi.fn() } }))
-vi.mock("debug", () => ({ debug: vi.fn(() => vi.fn()) }))
-vi.mock("axios-debug-log", () => ({ addLogger: vi.fn() }))
-// #endregion
+import { ObsidianAPI } from "./obsidian-api"
+import type { IObsidianAPI, ObsidianConfig } from "./types"
 
-type MockedClient = {
-  get: ReturnType<typeof vi.fn>
-  put: ReturnType<typeof vi.fn>
-  post: ReturnType<typeof vi.fn>
-}
 const config: ObsidianConfig = {
   apiKey: "test-api-key",
   port: 27124,
@@ -32,23 +13,27 @@ const config: ObsidianConfig = {
 
 describe("ObsidianAPI - Unit Tests", () => {
   let api: IObsidianAPI
-  let mockClient: MockedClient
+  let baseURL: string
+  let axiosCreateSpy: vi.MockInstance<ReturnType<typeof axios.create>, Parameters<typeof axios.create>>
 
   beforeEach(() => {
-    mockClient = { get: vi.fn(), put: vi.fn(), post: vi.fn() }
-    // Using correct type for mocked function
-    ;(axios.create as ReturnType<typeof vi.fn>).mockReturnValue(mockClient)
+    axiosCreateSpy = vi.spyOn(axios, "create")
+    baseURL = `http://${config.host}:${config.port}`
     api = new ObsidianAPI(config)
+    nock.cleanAll()
+    nock.disableNetConnect()
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    axiosCreateSpy.mockRestore()
+    nock.cleanAll()
+    nock.enableNetConnect()
   })
 
   describe("constructor", () => {
     it("should create an axios client with the correct configuration", () => {
-      expect(axios.create).toHaveBeenCalledTimes(1)
-      const createCall = (axios.create as ReturnType<typeof vi.fn>).mock.calls[0][0]
+      expect(axiosCreateSpy).toHaveBeenCalledTimes(1)
+      const createCall = axiosCreateSpy.mock.calls[0][0]
       expect(createCall.baseURL).toBe("http://127.0.0.1:27124")
       expect(createCall.headers.Authorization).toBe("Bearer test-api-key")
       expect(createCall.headers["Content-Type"]).toBe("application/json")
@@ -67,31 +52,27 @@ describe("ObsidianAPI - Unit Tests", () => {
 
   describe("listNotes", () => {
     it("should retrieve all markdown files", async () => {
-      mockClient.get.mockResolvedValueOnce({
-        data: {
+      nock(baseURL)
+        .get("/vault/")
+        .reply(200, {
           files: ["note1.md", "note2.md", "file.txt", "folder/note3.md"],
-        },
-      })
-
+        })
       const result = await api.listNotes()
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/")
       expect(result).toEqual(["note1.md", "note2.md", "folder/note3.md"])
     })
 
     it("should filter by folder when provided", async () => {
-      mockClient.get.mockResolvedValueOnce({
-        data: {
+      nock(baseURL)
+        .get("/vault/folder/")
+        .reply(200, {
           files: ["note1.md", "folder/note2.md", "folder/subfolder/note3.md"],
-        },
-      })
-
+        })
       const result = await api.listNotes("folder")
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder/")
       expect(result).toEqual(["note1.md", "folder/note2.md", "folder/subfolder/note3.md"])
     })
 
     it("should handle empty response", async () => {
-      mockClient.get.mockResolvedValueOnce({ data: {} })
+      nock(baseURL).get("/vault/").reply(200, {})
       const result = await api.listNotes()
       expect(result).toEqual([])
     })
@@ -102,15 +83,11 @@ describe("ObsidianAPI - Unit Tests", () => {
       const path = "folder/note.md"
       const content = "Note content"
       const metadata = { tags: ["test"] }
-
-      mockClient.get.mockResolvedValueOnce({
-        data: { path, content, ...metadata },
-      })
-
+      nock(baseURL)
+        .get("/vault/folder%2Fnote.md")
+        .matchHeader("accept", "application/vnd.olrapi.note+json")
+        .reply(200, { path, content, ...metadata })
       const result = await api.readNote(path)
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", {
-        headers: { Accept: "application/vnd.olrapi.note+json" },
-      })
       expect(result).toEqual({ path, content, metadata })
     })
   })
@@ -119,13 +96,8 @@ describe("ObsidianAPI - Unit Tests", () => {
     it("should save a note with the given content", async () => {
       const path = "folder/note.md"
       const content = "Updated content"
-
-      mockClient.put.mockResolvedValueOnce({})
-
+      nock(baseURL).put("/vault/folder%2Fnote.md", content).matchHeader("content-type", "text/markdown").reply(200, {})
       await api.writeNote(path, content)
-      expect(mockClient.put).toHaveBeenCalledWith("/vault/folder%2Fnote.md", content, {
-        headers: { "Content-Type": "text/markdown" },
-      })
     })
   })
 
@@ -144,20 +116,12 @@ describe("ObsidianAPI - Unit Tests", () => {
           matches: [{ context: "content2" }],
         },
       ]
-
       const expectedResults = [
         { path: "note1.md", content: "content1", metadata: { score: 0.75 } },
         { path: "note2.md", content: "content2", metadata: { score: 0.5 } },
       ]
-
-      mockClient.post.mockResolvedValueOnce({
-        data: apiResponse,
-      })
-
+      nock(baseURL).post("/search/simple/").query({ query, contextLength: 100 }).reply(200, apiResponse)
       const result = await api.searchNotes(query)
-      expect(mockClient.post).toHaveBeenCalledWith("/search/simple/", null, {
-        params: { query, contextLength: 100 },
-      })
       expect(result).toEqual(expectedResults)
     })
   })
@@ -166,15 +130,11 @@ describe("ObsidianAPI - Unit Tests", () => {
     it("should retrieve metadata for a note", async () => {
       const path = "folder/note.md"
       const metadata = { tags: ["test"], created: "2025-03-23" }
-
-      mockClient.get.mockResolvedValueOnce({
-        data: metadata,
-      })
-
+      nock(baseURL)
+        .get("/vault/folder%2Fnote.md")
+        .matchHeader("accept", "application/vnd.olrapi.note+json")
+        .reply(200, metadata)
       const result = await api.getMetadata(path)
-      expect(mockClient.get).toHaveBeenCalledWith("/vault/folder%2Fnote.md", {
-        headers: { Accept: "application/vnd.olrapi.note+json" },
-      })
       expect(result).toEqual(metadata)
     })
   })

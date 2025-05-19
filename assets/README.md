@@ -51,5 +51,7 @@ npx @openapitools/openapi-generator-cli generate -i openapi-obsidian-local-rest-
 npx @modelcontextprotocol/inspector bun run src/cli.ts
 
 # ALTERNATIVES:
-bunx @modelcontextprotocol/inspector
+bunx @modelcontextprotocol/inspector bun run src/cli.ts
+
+open https://localhost:6274
 ```

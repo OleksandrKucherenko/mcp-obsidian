@@ -145,9 +145,11 @@ npm test
 ```bash
 # to build the image
 docker build -t mcp/obsidian:latest -f Dockerfile .
+docker build -t mcp/obsidian:bun -f Dockerfile.bun .
 
 # run locally with enabled debug and injected API_KEY
 DEBUG=* docker run --name mcp-obsidian -e DEBUG -e API_KEY --rm -i mcp/obsidian:latest
+DEBUG=* docker run --name mcp-obsidian -e DEBUG -e API_KEY --rm -i mcp/obsidian:bun
 ```
 
 https://github.com/modelcontextprotocol/inspector
@@ -184,6 +186,28 @@ npx @modelcontextprotocol/inspector bun src/cli.ts
         "API_KEY": "your-api-key-here",
         "DEBUG": "*"
       }
+    },
+    "obsidian": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--name",
+        "obsidian-windsurf",
+        "--rm",
+        "-i",
+        "ghcr.io/oleksandrkucherenko/mcp-obsidian:bun",
+        "-e",
+        "API_KEY",
+        "-e",
+        "API_HOST",
+        "-e",
+        "DEBUG"
+      ],
+      "env": {
+        "API_KEY": "190ba65d28ac1ba4797cb195bb06f20965395abbd9c39a0fa9b6cab2345c58b9",
+        "API_HOST": "https://172.26.32.1",
+        "DEBUG": "*"
+      }
     }
   }
 }
@@ -210,6 +234,11 @@ firewall.cpl # and then press 'Advanced settings'
 # Add firewall rule to allow port 27124 (Run in Admin PowerShell)
 New-NetFirewallRule -DisplayName "WSL2 Obsidian REST API" -Direction Inbound -LocalPort 27123,27124 -Protocol TCP -Action Allow
 
+# Add firewall rule to allow port 6274 (Run in Admin PowerShell)
+New-NetFirewallRule -DisplayName "WSL2 MCP Inspector" -Direction Inbound -LocalPort 6274 -Protocol TCP -Action Allow
+open https://localhost:6274 # do not use 127.0.0.1!
+
+
 # check firewall rules (CMD) that manage 27124 port
 netsh advfirewall firewall show rule name=all | findstr /C:"Rule Name" /C:"LocalPort" /C:"RemotePort" | findstr /C:"27124"
 
@@ -221,6 +250,9 @@ netsh advfirewall firewall show rule name=all | grep -A 4 -B 9 27124
 
 # Isssue: all those methods does not allow to find port if used range of ports, example: 20000-30000
 # in this case those simple methods will not work.
+
+# Run MCP server locally in DEBUG mode
+DEBUG=mcp:* bun run src/cli.ts --config ./config.wsl2.jsonc
 ```
 
 ### Using from WSL

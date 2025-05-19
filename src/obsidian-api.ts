@@ -1,10 +1,9 @@
 import axios, { type AxiosInstance } from "axios"
+import axiosRetry from "axios-retry"
 import { addLogger } from "axios-debug-log"
 import { debug } from "debug"
 import https from "node:https"
-import type { IObsidianAPI, Note, NoteJson, ObsidianConfig } from "./types"
-
-const logger = debug("mcp:obsidian-api")
+import type { IObsidianAPI, Note, NoteJson, ObsidianConfig, ServerStatus } from "./types"
 
 /** Obsidian Local REST API client. */
 export class ObsidianAPI implements IObsidianAPI {
@@ -35,7 +34,10 @@ export class ObsidianAPI implements IObsidianAPI {
       timeout: this.timeout,
     })
 
-    this.logger = debug("mcp:obsidian-api")
+    // configure retry-logic
+    axiosRetry(this.client, { retries: 3 })
+
+    this.logger = debug("mcp:api")
     addLogger(this.client, this.logger)
   }
 
@@ -216,18 +218,11 @@ export class ObsidianAPI implements IObsidianAPI {
   }
 
   /** Gets server information including authentication status and API version. */
-  public async getServerInfo(): Promise<{
-    authenticated: boolean
-    version: string
-    service_name: string
-  }> {
+  public async getServerInfo(): Promise<ServerStatus> {
     return this.safeCall(async () => {
       const response = await this.client.get("/")
-      return {
-        authenticated: response.data.authenticated,
-        version: response.data.version,
-        service_name: response.data.service_name,
-      }
+
+      return response.data
     })
   }
 

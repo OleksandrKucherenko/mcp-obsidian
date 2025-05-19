@@ -1,6 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
+import { debug } from "debug"
 
 import type { IObsidianAPI, Server as Srv, ServerTransport, Tool } from "./types"
 import { ObsidianAPI } from "./obsidian-api"
@@ -23,11 +24,14 @@ export class ObsidianMCPServer implements Srv {
     version: string
     readOnly: boolean
   }
+  private readonly logger: ReturnType<typeof debug>
   private api: IObsidianAPI
   private tools: Map<string, Tool>
   private server: Server
 
   constructor(config: ServerConfig) {
+    this.logger = debug("mcp:server")
+
     this.config = {
       name: config.name,
       version: config.version,
@@ -38,16 +42,18 @@ export class ObsidianMCPServer implements Srv {
     this.tools = new Map()
     this.registerTools()
 
+    const capabilities = {
+      capabilities: {
+        tools: {},
+      },
+    }
+
     this.server = new Server(
       {
         name: config.name,
         version: config.version,
       },
-      {
-        capabilities: {
-          tools: {},
-        },
-      },
+      capabilities,
     )
 
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -108,6 +114,18 @@ export class ObsidianMCPServer implements Srv {
     const transport = new StdioServerTransport()
     await this.server.connect(transport)
 
-    console.error(`${this.config.name} MCP Server running on stdio`)
+    this.logger(`${this.config.name} MCP Server running on stdio`)
+
+    // send to STDOUT
+    // process.stdout.write(`${this.config.name} MCP Server running on stdio\n`)
+
+    this.api
+      .getServerInfo()
+      .then((info) => {
+        this.logger("Obsidian API info: %O", info)
+      })
+      .catch((error) => {
+        this.logger("Obsidian API error: %O", error)
+      })
   }
 }
