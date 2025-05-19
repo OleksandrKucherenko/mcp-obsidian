@@ -21,6 +21,9 @@ yarn.lock
 package-lock.json
 bun.lock*
 
+# build cache
+tsconfig.tsbuildinfo
+
 # DIRENV for secret injecting
 # .envrc
 

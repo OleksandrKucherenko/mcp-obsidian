@@ -20,7 +20,12 @@ namespace NodeJS {
   }
 }
 
-const extractGatewayIp = () => execSync("ip route show | grep -i default | awk '{ print $3}'").toString().trim()
+const extractGatewayIp = () => {
+  if (process.platform === 'darwin') {
+    return '127.0.0.1'
+  }
+  return execSync("ip route show | grep -i default | awk '{ print $3}'").toString().trim()
+}
 
 const locahostConfig: ObsidianConfig = {
   apiKey: process.env.API_KEY ?? "<secret>",
