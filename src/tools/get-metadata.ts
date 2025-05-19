@@ -1,29 +1,34 @@
-import type { IObsidianAPI, ToolResponse } from "../types"
-import { BaseTool } from "./base-tool"
+import type { IObsidianAPI } from "../types.ts"
+import { z } from "zod"
 
-export class GetMetadataTool extends BaseTool {
-  constructor(api: IObsidianAPI) {
-    super(api, "getMetadata", "Get metadata for a specific note", {
-      type: "object",
-      required: ["path"],
-      properties: {
-        path: {
-          type: "string",
-          description: "Path to the note to get metadata from",
-        },
+export const name = "getMetadata"
+
+export const description = "Get metadata for a specific note"
+
+export const shape = {
+  path: z.string(),
+}
+
+export const schema = z.object(shape)
+
+export type Schema = z.infer<typeof schema>
+
+export const executor = (api: IObsidianAPI) => async (args: Schema) => {
+  const metadata = await api.getMetadata(args.path)
+  return {
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify(metadata, null, 2),
       },
-    })
+    ],
   }
+}
 
-  async execute(args: { path: string }): Promise<ToolResponse> {
-    const metadata = await this.api.getMetadata(args.path)
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(metadata, null, 2),
-        },
-      ],
-    }
-  }
+export default {
+  name,
+  description,
+  schema,
+  shape,
+  executor,
 }

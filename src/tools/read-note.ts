@@ -1,29 +1,34 @@
-import type { IObsidianAPI, ToolResponse } from "../types"
-import { BaseTool } from "./base-tool"
+import { z } from "zod"
+import type { IObsidianAPI } from "../types.ts"
 
-export class ReadNoteTool extends BaseTool {
-  constructor(api: IObsidianAPI) {
-    super(api, "readNote", "Read the contents of a specific note", {
-      type: "object",
-      required: ["path"],
-      properties: {
-        path: {
-          type: "string",
-          description: "Path to the note to read",
-        },
+export const name = "readNote"
+
+export const description = "Read the contents of a specific note"
+
+export const shape = {
+  path: z.string(),
+}
+
+export const schema = z.object(shape)
+
+export type Schema = z.infer<typeof schema>
+
+export const executor = (api: IObsidianAPI) => async (args: Schema) => {
+  const note = await api.readNote(args.path)
+  return {
+    content: [
+      {
+        type: "text",
+        text: note.content,
       },
-    })
+    ],
   }
+}
 
-  async execute(args: { path: string }): Promise<ToolResponse> {
-    const note = await this.api.readNote(args.path)
-    return {
-      content: [
-        {
-          type: "text",
-          text: note.content,
-        },
-      ],
-    }
-  }
+export default {
+  name,
+  description,
+  schema,
+  shape,
+  executor,
 }

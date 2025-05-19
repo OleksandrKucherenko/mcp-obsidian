@@ -1,28 +1,35 @@
-import type { IObsidianAPI, ToolResponse } from "../types"
-import { BaseTool } from "./base-tool"
+import { z } from "zod"
 
-export class ListNotesTool extends BaseTool {
-  constructor(api: IObsidianAPI) {
-    super(api, "listNotes", "List all notes in the vault or a specific folder", {
-      type: "object",
-      properties: {
-        folder: {
-          type: "string",
-          description: "Optional folder path to list notes from",
-        },
+import type { IObsidianAPI } from "../types.ts"
+
+export const name = "listNotes"
+
+export const description = "List all notes in the vault or a specific folder"
+
+export const shape = {
+  folder: z.string().optional(),
+}
+
+export const schema = z.object(shape)
+
+export type Schema = z.infer<typeof schema>
+
+export const executor = (api: IObsidianAPI) => async (data: Schema) => {
+  const notes = await api.listNotes(data.folder)
+  return {
+    content: [
+      {
+        type: "text",
+        text: JSON.stringify(notes, null, 2),
       },
-    })
+    ],
   }
+}
 
-  async execute(args: { folder?: string }): Promise<ToolResponse> {
-    const notes = await this.api.listNotes(args.folder)
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(notes, null, 2),
-        },
-      ],
-    }
-  }
+export default {
+  name,
+  description,
+  schema,
+  shape,
+  executor,
 }

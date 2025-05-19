@@ -1,11 +1,16 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js"
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
-import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
 import { debug } from "debug"
+import { z } from "zod"
 
-import type { IObsidianAPI, Server as Srv, ServerTransport, Tool } from "./types"
-import { ObsidianAPI } from "./obsidian-api"
-import { ListNotesTool, ReadNoteTool, WriteNoteTool, SearchNotesTool, GetMetadataTool } from "./tools"
+import gm from "./tools/get-metadata.js"
+import ls from "./tools/list-notes.js"
+import rn from "./tools/read-note.js"
+import sn from "./tools/search-notes.js"
+import wn from "./tools/write-note.js"
+
+import type { IObsidianAPI, ServerTransport, Server as Srv, Tool } from "./types.ts"
+import { ObsidianAPI } from "./obsidian-api.js"
 
 export interface ServerConfig {
   name: string
@@ -18,16 +23,17 @@ export interface ServerConfig {
   }
 }
 
+type McpServerType = InstanceType<typeof McpServer>
+
 export class ObsidianMCPServer implements Srv {
-  public config: {
+  public readonly config: {
     name: string
     version: string
     readOnly: boolean
   }
   private readonly logger: ReturnType<typeof debug>
-  private api: IObsidianAPI
-  private tools: Map<string, Tool>
-  private server: Server
+  private readonly api: IObsidianAPI
+  private readonly server: McpServerType
 
   constructor(config: ServerConfig) {
     this.logger = debug("mcp:server")
@@ -37,87 +43,24 @@ export class ObsidianMCPServer implements Srv {
       version: config.version,
       readOnly: config.readOnly,
     }
-
     this.api = new ObsidianAPI(config.obsidian)
-    this.tools = new Map()
-    this.registerTools()
-
-    const capabilities = {
-      capabilities: {
-        tools: {},
-      },
-    }
-
-    this.server = new Server(
-      {
-        name: config.name,
-        version: config.version,
-      },
-      capabilities,
-    )
-
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      const tools = [...this.tools.values()].map((tool) => tool.getDefinition())
-
-      return { tools }
+    this.server = new McpServer({
+      name: config.name,
+      version: config.version,
     })
+
+    // register tools
 
     // @ts-ignore
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      try {
-        const { name, arguments: args } = request.params
-        const tool = <Tool>this.tools.get(name)
-
-        const reply = await tool.execute(args as Record<string, unknown>)
-
-        return reply
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-
-        return {
-          content: [{ type: "text", text: `Error: ${errorMessage}` }],
-          isError: true,
-        }
-      }
-    })
-  }
-
-  private registerTools() {
-    const tools = [
-      // Readonly tools
-      new ListNotesTool(this.api),
-      new ReadNoteTool(this.api),
-      new SearchNotesTool(this.api),
-      new GetMetadataTool(this.api),
-      ...(this.config.readOnly
-        ? []
-        : [
-            // Write tools
-            new WriteNoteTool(this.api),
-          ]),
-    ]
-
-    for (const tool of tools) {
-      this.registerTool(tool)
-    }
-  }
-
-  public registerTool(tool: Tool): void {
-    this.tools.set(tool.getName(), tool)
-  }
-
-  public async connect(transport: ServerTransport): Promise<void> {
-    // do nothing
-  }
-
-  public async start() {
-    const transport = new StdioServerTransport()
-    await this.server.connect(transport)
-
-    this.logger(`${this.config.name} MCP Server running on stdio`)
-
-    // send to STDOUT
-    // process.stdout.write(`${this.config.name} MCP Server running on stdio\n`)
+    this.server.tool(ls.name, ls.description, ls.shape, ls.executor(this.api))
+    // @ts-ignore
+    this.server.tool(rn.name, rn.description, rn.shape, rn.executor(this.api))
+    // @ts-ignore
+    this.server.tool(sn.name, sn.description, sn.shape, sn.executor(this.api))
+    // @ts-ignore
+    this.server.tool(gm.name, gm.description, gm.shape, gm.executor(this.api))
+    // @ts-ignore
+    this.server.tool(wn.name, wn.description, wn.shape, wn.executor(this.api))
 
     this.api
       .getServerInfo()
@@ -127,5 +70,20 @@ export class ObsidianMCPServer implements Srv {
       .catch((error) => {
         this.logger("Obsidian API error: %O", error)
       })
+  }
+
+  public async connect(transport: ServerTransport): Promise<void> {
+    // do nothing
+  }
+
+  public registerTool(tool: Tool): void {
+    // do nothing
+  }
+
+  public async start() {
+    const transport = new StdioServerTransport()
+    await this.server.connect(transport)
+
+    this.logger(`${this.config.name} MCP Server running on stdio`)
   }
 }

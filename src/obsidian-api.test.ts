@@ -2,8 +2,8 @@ import axios from "axios"
 import nock from "nock"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { ObsidianAPI } from "./obsidian-api"
-import type { IObsidianAPI, ObsidianConfig } from "./types"
+import { ObsidianAPI } from "./obsidian-api.ts"
+import type { IObsidianAPI, ObsidianConfig } from "./types.ts"
 
 const config: ObsidianConfig = {
   apiKey: "test-api-key",

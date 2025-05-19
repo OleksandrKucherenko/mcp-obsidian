@@ -1,36 +1,35 @@
-import type { IObsidianAPI, ToolResponse } from "../types"
-import { BaseTool } from "./base-tool"
+import { z } from "zod"
+import type { IObsidianAPI } from "../types.ts"
 
-export class WriteNoteTool extends BaseTool {
-  constructor(api: IObsidianAPI) {
-    super(api, "writeNote", "Create or update a note", {
-      type: "object",
-      required: ["path", "content"],
-      properties: {
-        path: {
-          type: "string",
-          description: "Path where to create/update the note",
-        },
-        content: {
-          type: "string",
-          description: "Content of the note",
-        },
+export const name = "writeNote"
+
+export const description = "Create or update a note"
+
+export const shape = {
+  path: z.string(),
+  content: z.string(),
+}
+
+export const schema = z.object(shape)
+
+export type Schema = z.infer<typeof schema>
+
+export const executor = (api: IObsidianAPI) => async (args: Schema) => {
+  await api.writeNote(args.path, args.content)
+  return {
+    content: [
+      {
+        type: "text",
+        text: `Note ${args.path} written successfully`,
       },
-    })
+    ],
   }
+}
 
-  async execute(args: {
-    path: string
-    content: string
-  }): Promise<ToolResponse> {
-    await this.api.writeNote(args.path, args.content)
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Note ${args.path} written successfully`,
-        },
-      ],
-    }
-  }
+export default {
+  name,
+  description,
+  schema,
+  shape,
+  executor,
 }

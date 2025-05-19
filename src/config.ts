@@ -1,6 +1,6 @@
 import fs from "node:fs"
 import JSON5 from "json5"
-import type { ServerConfig } from "./server"
+import type { ServerConfig } from "./server.ts"
 import { debug } from "debug"
 import dotenvExpand from "dotenv-expand"
 
@@ -36,9 +36,9 @@ export function loadConfig(configPath?: string): ServerConfig {
   logger("Expanded config: %o", resolved)
 
   // environment variables if they available override the config file
-  config.obsidian.apiKey = resolved.API_KEY
-  config.obsidian.host = resolved.API_HOST
-  config.obsidian.port = Number.parseInt(resolved.API_PORT, 10)
+  config.obsidian.apiKey = <string>resolved.API_KEY
+  config.obsidian.host = <string>resolved.API_HOST
+  config.obsidian.port = Number.parseInt(<string>resolved.API_PORT, 10)
 
   // try to validate the apiKey from config, for matching pattern /^[a-zA-Z0-9]{32,}$/
   // default key size from Obsidian Local REST API plugin is 64 characters

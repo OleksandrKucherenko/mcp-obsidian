@@ -1,9 +1,10 @@
 import axios, { type AxiosInstance } from "axios"
-import axiosRetry from "axios-retry"
 import { addLogger } from "axios-debug-log"
+import axiosRetry from "axios-retry"
 import { debug } from "debug"
 import https from "node:https"
-import type { IObsidianAPI, Note, NoteJson, ObsidianConfig, ServerStatus } from "./types"
+
+import type { IObsidianAPI, Note, NoteJson, ObsidianConfig, ServerStatus } from "./types.ts"
 
 /** Obsidian Local REST API client. */
 export class ObsidianAPI implements IObsidianAPI {
@@ -38,6 +39,8 @@ export class ObsidianAPI implements IObsidianAPI {
     axiosRetry(this.client, { retries: 3 })
 
     this.logger = debug("mcp:api")
+
+    // @ts-ignore
     addLogger(this.client, this.logger)
   }
 

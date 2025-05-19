@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
-import yargs from "yargs"
+import yargs, { type Argv, type Arguments } from "yargs"
 import { hideBin } from "yargs/helpers"
-import { loadConfig } from "./config"
-import { ObsidianMCPServer } from "./server"
-import type { Config } from "./types"
+import { loadConfig } from "./config.js"
+import { ObsidianMCPServer } from "./server.js"
+import type { Config } from "./types.js"
 
 yargs(hideBin(process.argv))
   .command(
     "$0",
     "Start the Obsidian MCP server",
-    (yargs: yargs.Argv): yargs.Argv<Config> => {
+    (yargs: Argv): Argv<Config> => {
       return yargs.option("config", {
         alias: "c",
         type: "string",
@@ -18,7 +18,7 @@ yargs(hideBin(process.argv))
         demandOption: false,
       })
     },
-    async (argv: yargs.Arguments<Config>) => {
+    async (argv: Arguments<Config>) => {
       try {
         const config = loadConfig(argv.config)
         const server = new ObsidianMCPServer(config)

@@ -5,8 +5,8 @@ import { debug } from "debug"
 import { dedent as de } from "ts-dedent"
 import { afterEach, beforeAll, describe, expect, it } from "vitest"
 
-import { ObsidianAPI } from "./obsidian-api"
-import type { IObsidianAPI, ObsidianConfig } from "./types"
+import { ObsidianAPI } from "./obsidian-api.ts"
+import type { IObsidianAPI, ObsidianConfig } from "./types.ts"
 
 // ref: https://github.com/sindresorhus/is-wsl/blob/main/index.js
 const isWSL = () => process.platform === "linux" && process.env.WSL_DISTRO_NAME
