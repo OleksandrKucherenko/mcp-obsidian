@@ -24,19 +24,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker image (bun)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile.bun
-          push: true
-          tags: ghcr.io/${{ steps.repo_name.outputs.repo_lowercase }}:bun
-
-      - name: Build and push Docker image (default)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.repo_name.outputs.repo_lowercase }}:latest
+#
+#      - name: Build and push Docker image (bun)
+#        uses: docker/build-push-action@v6
+#        with:
+#          context: .
+#          file: Dockerfile.bun
+#          push: true
+#          tags: ghcr.io/${{ steps.repo_name.outputs.repo_lowercase }}:bun
+#
+#      - name: Build and push Docker image (default)
+#        uses: docker/build-push-action@v6
+#        with:
+#          context: .
+#          file: Dockerfile
+#          push: true
+#          tags: ghcr.io/${{ steps.repo_name.outputs.repo_lowercase }}:latest
+#
